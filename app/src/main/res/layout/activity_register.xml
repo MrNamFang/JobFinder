@@ -56,7 +56,36 @@
             android:layout_height="wrap_content"
             android:hint="Xác nhận mật khẩu"
             android:inputType="textPassword"
-            android:layout_marginBottom="20dp" />
+            android:layout_marginBottom="16dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Bạn là:"
+            android:textStyle="bold" />
+
+        <RadioGroup
+            android:id="@+id/rgRole"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="20dp">
+
+            <RadioButton
+                android:id="@+id/rbSeeker"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:checked="true"
+                android:text="Ứng viên" />
+
+            <RadioButton
+                android:id="@+id/rbEmployer"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Nhà tuyển dụng" />
+        </RadioGroup>
 
         <Button
             android:id="@+id/btnRegister"

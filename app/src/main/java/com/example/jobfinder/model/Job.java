@@ -1,9 +1,13 @@
 package com.example.jobfinder.model;
 
+import com.google.firebase.firestore.IgnoreExtraProperties;
+
 import java.io.Serializable;
 
+@IgnoreExtraProperties
 public class Job implements Serializable {
     private String id;
+    private String employerId;   // uid nhà tuyển dụng đã đăng tin
     private String title;
     private String companyName;
     private String location;
@@ -38,6 +42,14 @@ public class Job implements Serializable {
         this.id = id;
     }
 
+    public String getEmployerId() {
+        return employerId;
+    }
+
+    public void setEmployerId(String employerId) {
+        this.employerId = employerId;
+    }
+
     public String getTitle() {
         return title;
     }
@@ -52,6 +64,14 @@ public class Job implements Serializable {
 
     public void setCompanyName(String companyName) {
         this.companyName = companyName;
+    }
+
+    // Tin do nhà tuyển dụng đăng lưu field "company" thay vì "companyName".
+    // Chỉ có setter (không có getter) để Firestore đọc được mà không ghi thêm field thừa.
+    public void setCompany(String company) {
+        if (this.companyName == null) {
+            this.companyName = company;
+        }
     }
 
     public String getLocation() {

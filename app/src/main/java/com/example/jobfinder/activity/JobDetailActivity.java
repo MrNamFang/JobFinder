@@ -16,7 +16,6 @@ import com.example.jobfinder.model.User;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 public class JobDetailActivity extends AppCompatActivity {
 
@@ -42,6 +41,8 @@ public class JobDetailActivity extends AppCompatActivity {
         db = FirebaseFirestore.getInstance();
         currentUid = mAuth.getCurrentUser() != null ? mAuth.getCurrentUser().getUid() : null;
 
+        findViewById(R.id.btnBack).setOnClickListener(v -> finish());
+
         tvDetailTitle = findViewById(R.id.tvDetailTitle);
         tvDetailCompany = findViewById(R.id.tvDetailCompany);
         tvDetailSalary = findViewById(R.id.tvDetailSalary);
@@ -57,9 +58,11 @@ public class JobDetailActivity extends AppCompatActivity {
         if (currentJob != null) {
             displayJobInfo(currentJob);
             checkIfJobSaved();
+            checkIfAlreadyApplied();
         } else {
             Toast.makeText(this, "Không tìm thấy dữ liệu công việc", Toast.LENGTH_SHORT).show();
             finish();
+            return;
         }
 
         btnSaveJob.setOnClickListener(v -> toggleSaveJob());
@@ -150,6 +153,26 @@ public class JobDetailActivity extends AppCompatActivity {
 
     // ============ PHẦN ỨNG TUYỂN (APPLY) ============
 
+    /** Khi mở màn: nếu đã ứng tuyển rồi thì khóa nút luôn. */
+    private void checkIfAlreadyApplied() {
+        if (currentUid == null) return;
+
+        db.collection("applications")
+                .whereEqualTo("userId", currentUid)
+                .whereEqualTo("jobId", currentJob.getId())
+                .get()
+                .addOnSuccessListener(querySnapshot -> {
+                    if (!querySnapshot.isEmpty()) {
+                        markAsApplied();
+                    }
+                });
+    }
+
+    private void markAsApplied() {
+        btnApply.setText("Đã ứng tuyển");
+        btnApply.setEnabled(false);
+    }
+
     private void confirmApply() {
         if (currentUid == null) {
             Toast.makeText(this, "Vui lòng đăng nhập lại", Toast.LENGTH_SHORT).show();
@@ -165,19 +188,24 @@ public class JobDetailActivity extends AppCompatActivity {
     }
 
     private void checkAlreadyAppliedThenApply() {
+        btnApply.setEnabled(false);
+
         db.collection("applications")
                 .whereEqualTo("userId", currentUid)
                 .whereEqualTo("jobId", currentJob.getId())
                 .get()
                 .addOnSuccessListener(querySnapshot -> {
                     if (!querySnapshot.isEmpty()) {
+                        markAsApplied();
                         Toast.makeText(this, "Bạn đã ứng tuyển công việc này rồi", Toast.LENGTH_SHORT).show();
                     } else {
                         submitApplication();
                     }
                 })
-                .addOnFailureListener(e ->
-                        Toast.makeText(this, "Lỗi kiểm tra: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+                .addOnFailureListener(e -> {
+                    btnApply.setEnabled(true);
+                    Toast.makeText(this, "Lỗi kiểm tra: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                });
     }
 
     private void submitApplication() {
@@ -197,6 +225,7 @@ public class JobDetailActivity extends AppCompatActivity {
                             currentJob.getId(),
                             currentJob.getTitle(),
                             currentJob.getCompanyName(),
+                            currentJob.getEmployerId(),      // để nhà tuyển dụng lọc được đơn
                             currentUid,
                             user.getFullName(),
                             user.getEmail(),
@@ -204,14 +233,14 @@ public class JobDetailActivity extends AppCompatActivity {
                             user.getEducation(),
                             user.getExperience(),
                             user.getSkills(),
-                            "Đang chờ",
+                            Application.STATUS_PENDING,
                             System.currentTimeMillis()
                     );
 
                     db.collection("applications")
                             .add(application)
                             .addOnSuccessListener(documentReference -> {
-                                btnApply.setEnabled(true);
+                                markAsApplied();
                                 Toast.makeText(this, "Ứng tuyển thành công!", Toast.LENGTH_SHORT).show();
                             })
                             .addOnFailureListener(e -> {

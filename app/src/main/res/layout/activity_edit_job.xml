@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="20dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Sửa tin tuyển dụng"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="20dp" />
+
+        <EditText
+            android:id="@+id/etEditJobTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Vị trí tuyển dụng"
+            android:padding="12dp"
+            android:background="@android:drawable/editbox_background" />
+
+        <EditText
+            android:id="@+id/etEditCompany"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:hint="Tên công ty"
+            android:padding="12dp"
+            android:background="@android:drawable/editbox_background" />
+
+        <EditText
+            android:id="@+id/etEditLocation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:hint="Địa điểm làm việc"
+            android:padding="12dp"
+            android:background="@android:drawable/editbox_background" />
+
+        <EditText
+            android:id="@+id/etEditSalary"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:hint="Mức lương"
+            android:padding="12dp"
+            android:background="@android:drawable/editbox_background" />
+
+        <EditText
+            android:id="@+id/etEditDescription"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:hint="Mô tả công việc"
+            android:inputType="textMultiLine"
+            android:minLines="5"
+            android:gravity="top"
+            android:padding="12dp"
+            android:background="@android:drawable/editbox_background" />
+
+        <Button
+            android:id="@+id/btnUpdateJob"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:text="Cập nhật"
+            android:padding="14dp" />
+
+    </LinearLayout>
+</androidx.core.widget.NestedScrollView>
