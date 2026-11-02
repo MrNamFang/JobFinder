@@ -92,9 +92,19 @@ public class LoginActivity extends AppCompatActivity {
                     String role = doc.getString("role");
                     Intent intent;
 
-                    // TODO: khi ghép code admin, thêm nhánh:
-                    // if ("admin".equals(role)) intent = new Intent(this, com.example.jobfinder.admin.AdminDashboardActivity.class);
-                    if ("employer".equals(role)) {
+                    // Kiem tra tai khoan bi khoa boi Admin
+                    Boolean blocked = doc.getBoolean("blocked");
+                    String status = doc.getString("status");
+                    if (Boolean.TRUE.equals(blocked) || "banned".equals(status)) {
+                        mAuth.signOut();
+                        btnLogin.setEnabled(true);
+                        Toast.makeText(this, "Tài khoản của bạn đã bị khóa bởi Quản trị viên!", Toast.LENGTH_LONG).show();
+                        return;
+                    }
+
+                    if ("admin".equals(role)) {
+                        intent = new Intent(this, com.example.jobfinder.admin.AdminDashboardActivity.class);
+                    } else if ("employer".equals(role)) {
                         intent = new Intent(this, EmployerMainActivity.class);
                     } else {
                         intent = new Intent(this, MainActivity.class);
