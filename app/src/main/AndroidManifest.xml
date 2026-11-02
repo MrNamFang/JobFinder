@@ -50,6 +50,10 @@
             android:name=".activity.NotificationsActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".activity.FeedbackActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
 
         <!-- Các màn hình Employer -->
         <activity

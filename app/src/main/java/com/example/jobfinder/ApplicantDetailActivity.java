@@ -29,7 +29,7 @@ public class ApplicantDetailActivity extends Activity {
 
     // Nhãn hiển thị tiếng Việt cho user xem, nhưng giá trị lưu thật (status)
     // vẫn là tiếng Anh không dấu ("Pending"...) để dễ so sánh/lọc trong code
-    // và khớp với dữ liệu Firestore sau này.
+    // và khớp với dữ liệu Firestore.
     private final String[] statusLabels = {"Chờ duyệt", "Đã xem", "Chấp nhận", "Từ chối"};
     private final String[] statusValues = {"Pending", "Reviewed", "Accepted", "Rejected"};
 
@@ -60,10 +60,13 @@ public class ApplicantDetailActivity extends Activity {
         tvJobTitle.setText("Ứng tuyển: " + application.getJobTitle());
         tvEmail.setText("📧 " + application.getEmail());
         tvPhone.setText("📱 " + application.getPhone());
-        tvCoverLetter.setText(application.getCoverLetter());
 
-        // SimpleDateFormat: chuyển timestamp dạng số (long) thành chuỗi ngày
-        // giờ dễ đọc. "new Date(millis)" tạo object Date từ mili-giây lưu sẵn.
+        // Hồ sơ CV do ứng viên điền trong Profile (đơn mới không có coverLetter)
+        tvCoverLetter.setText(
+                "Học vấn: " + valueOrDash(application.getEducation()) + "\n\n"
+                        + "Kinh nghiệm: " + valueOrDash(application.getExperience()) + "\n\n"
+                        + "Kỹ năng: " + valueOrDash(application.getSkills()));
+
         SimpleDateFormat sdf = new SimpleDateFormat("HH:mm dd/MM/yyyy", Locale.getDefault());
         tvAppliedDate.setText("Nộp lúc: " + sdf.format(new Date(application.getAppliedDate())));
 
@@ -76,6 +79,10 @@ public class ApplicantDetailActivity extends Activity {
         spinnerStatus.setSelection(currentIndex);
 
         btnUpdateStatus.setOnClickListener(v -> updateStatus());
+    }
+
+    private String valueOrDash(String s) {
+        return (s == null || s.trim().isEmpty()) ? "—" : s;
     }
 
     private int indexOfStatus(String statusValue) {
@@ -92,8 +99,7 @@ public class ApplicantDetailActivity extends Activity {
         application.setStatus(newStatus);
         btnUpdateStatus.setEnabled(false);
 
-        // update("status", ...) chỉ sửa đúng 1 field, không đụng tới các field
-        // khác (fullName, email, coverLetter...) của document.
+        // update("status", ...) chỉ sửa đúng 1 field, không đụng tới các field khác
         db.collection("applications").document(application.getId())
                 .update("status", newStatus)
                 .addOnSuccessListener(unused -> {

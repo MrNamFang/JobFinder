@@ -41,6 +41,8 @@ public class MyApplicationsActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         currentUid = mAuth.getCurrentUser() != null ? mAuth.getCurrentUser().getUid() : null;
 
+        findViewById(R.id.btnBack).setOnClickListener(v -> finish());
+
         recyclerViewApplications = findViewById(R.id.recyclerViewApplications);
         tvEmptyApplications = findViewById(R.id.tvEmptyApplications);
         recyclerViewApplications.setLayoutManager(new LinearLayoutManager(this));
@@ -48,6 +50,13 @@ public class MyApplicationsActivity extends AppCompatActivity {
         applicationAdapter = new ApplicationAdapter(applicationList, this::showCancelDialog);
         recyclerViewApplications.setAdapter(applicationAdapter);
 
+        loadApplications();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // Load lại để thấy trạng thái mới nếu nhà tuyển dụng vừa duyệt/từ chối
         loadApplications();
     }
 
@@ -73,8 +82,8 @@ public class MyApplicationsActivity extends AppCompatActivity {
     }
 
     private void showCancelDialog(Application application) {
-        // Chỉ cho phép hủy khi đang ở trạng thái "Đang chờ"
-        if (!"Đang chờ".equals(application.getStatus())) {
+        // Chỉ cho phép hủy khi đang ở trạng thái "Đang chờ" (Pending)
+        if (!Application.STATUS_PENDING.equals(Application.normalize(application.getStatus()))) {
             Toast.makeText(this, "Chỉ có thể hủy đơn đang ở trạng thái \"Đang chờ\"", Toast.LENGTH_SHORT).show();
             return;
         }

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:background="@android:color/white"
+    android:layout_marginBottom="8dp"
+    android:elevation="1dp">
+
+    <TextView
+        android:id="@+id/tvFeedbackContent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Nội dung phản hồi"
+        android:textSize="15sp" />
+
+    <TextView
+        android:id="@+id/tvFeedbackDate"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Ngày gửi"
+        android:textSize="12sp"
+        android:textColor="#999999"
+        android:layout_marginTop="6dp" />
+
+    <TextView
+        android:id="@+id/tvFeedbackStatus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Chưa xử lý"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        android:textColor="#FF9800"
+        android:background="#FFF3E0"
+        android:paddingHorizontal="10dp"
+        android:paddingVertical="3dp"
+        android:layout_marginTop="8dp" />
+
+    <TextView
+        android:id="@+id/tvAdminReply"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Phản hồi từ Admin: ..."
+        android:textSize="14sp"
+        android:textColor="#2196F3"
+        android:background="#E3F2FD"
+        android:padding="10dp"
+        android:layout_marginTop="8dp"
+        android:visibility="gone" />
+
+</LinearLayout>

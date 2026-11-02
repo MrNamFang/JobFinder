@@ -10,9 +10,12 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.jobfinder.EmployerMainActivity;
 import com.example.jobfinder.MainActivity;
 import com.example.jobfinder.R;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -44,7 +47,7 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        // Nếu đã đăng nhập từ trước, vào thẳng MainActivity luôn
+        // Nếu đã đăng nhập từ trước, kiểm tra role rồi vào đúng màn hình
         if (mAuth.getCurrentUser() != null) {
             goToMain();
         }
@@ -76,9 +79,34 @@ public class LoginActivity extends AppCompatActivity {
                 });
     }
 
+    // Đọc role trong Firestore rồi chuyển đến màn hình tương ứng
     private void goToMain() {
-        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-        startActivity(intent);
-        finish(); // đóng LoginActivity để bấm back không quay lại màn login
+        FirebaseUser user = mAuth.getCurrentUser();
+        if (user == null) return;
+
+        FirebaseFirestore.getInstance()
+                .collection("users")
+                .document(user.getUid())
+                .get()
+                .addOnSuccessListener(doc -> {
+                    String role = doc.getString("role");
+                    Intent intent;
+
+                    // TODO: khi ghép code admin, thêm nhánh:
+                    // if ("admin".equals(role)) intent = new Intent(this, com.example.jobfinder.admin.AdminDashboardActivity.class);
+                    if ("employer".equals(role)) {
+                        intent = new Intent(this, EmployerMainActivity.class);
+                    } else {
+                        intent = new Intent(this, MainActivity.class);
+                    }
+
+                    startActivity(intent);
+                    finish(); // bấm back không quay lại màn login
+                })
+                .addOnFailureListener(e -> {
+                    btnLogin.setEnabled(true);
+                    Toast.makeText(this, "Không lấy được thông tin tài khoản: " + e.getMessage(),
+                            Toast.LENGTH_LONG).show();
+                });
     }
 }

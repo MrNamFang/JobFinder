@@ -14,6 +14,9 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,6 +47,14 @@ public class ManageJobsActivity extends AppCompatActivity implements JobManageAd
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_manage_jobs);
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(android.R.id.content), (v, insets) -> {
+            Insets bars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            v.setPadding(bars.left, bars.top, bars.right, bars.bottom);
+            return insets;
+        });
+
+// Gắn thanh menu dưới, tab "Tin tuyển dụng" đang được chọn
+        EmployerNav.setup(this, findViewById(R.id.bottomNavEmployer), R.id.nav_manage_jobs);
 
         rvManageJobs = findViewById(R.id.rvManageJobs);
         tvEmpty = findViewById(R.id.tvEmptyManageJobs);

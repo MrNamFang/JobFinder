@@ -11,17 +11,14 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-/**
- * Màn hình Employer đăng tin tuyển dụng mới.
- * Lưu 1 document mới vào Firestore collection "jobs", tự gắn employerId
- * và postedDate để các màn khác (Home/Search của job seeker, Dashboard
- * của employer) dùng để lọc/sắp xếp.
- */
 public class PostJobActivity extends AppCompatActivity {
 
     private EditText etJobTitle, etCompany, etLocation, etSalary, etDescription;
@@ -39,6 +36,20 @@ public class PostJobActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_post_job);
 
+        // Chừa chỗ cho thanh trạng thái và thanh điều hướng của máy
+        View root = findViewById(android.R.id.content);
+        ViewCompat.setOnApplyWindowInsetsListener(root, (v, insets) -> {
+            Insets bars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            v.setPadding(bars.left, bars.top, bars.right, bars.bottom);
+            return insets;
+        });
+
+        // Nút quay lại (hiện khi theme có ActionBar)
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setTitle("Đăng tin tuyển dụng");
+        }
+
         etJobTitle = findViewById(R.id.etJobTitle);
         etCompany = findViewById(R.id.etCompany);
         etLocation = findViewById(R.id.etLocation);
@@ -47,16 +58,22 @@ public class PostJobActivity extends AppCompatActivity {
         spinnerJobType = findViewById(R.id.spinnerJobType);
         btnSubmitJob = findViewById(R.id.btnSubmitJob);
         progressBar = findViewById(R.id.progressBarPostJob);
+        findViewById(R.id.btnBack).setOnClickListener(v -> finish());
 
         db = FirebaseFirestore.getInstance();
         auth = FirebaseAuth.getInstance();
 
-        // Đổ dữ liệu cho Spinner chọn loại hình công việc
         ArrayAdapter<String> adapter = new ArrayAdapter<>(
                 this, android.R.layout.simple_spinner_dropdown_item, jobTypes);
         spinnerJobType.setAdapter(adapter);
 
         btnSubmitJob.setOnClickListener(v -> submitJob());
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        finish();
+        return true;
     }
 
     private void submitJob() {
@@ -90,7 +107,7 @@ public class PostJobActivity extends AppCompatActivity {
                 .addOnSuccessListener(documentReference -> {
                     setLoading(false);
                     Toast.makeText(PostJobActivity.this, "Đăng tin thành công!", Toast.LENGTH_SHORT).show();
-                    finish(); // quay lại Dashboard, onResume() ở đó sẽ tự cập nhật số liệu
+                    finish();
                 })
                 .addOnFailureListener(e -> {
                     setLoading(false);

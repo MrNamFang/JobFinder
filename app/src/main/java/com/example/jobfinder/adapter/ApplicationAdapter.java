@@ -12,6 +12,7 @@ import com.example.jobfinder.R;
 import com.example.jobfinder.model.Application;
 
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -45,21 +46,26 @@ public class ApplicationAdapter extends RecyclerView.Adapter<ApplicationAdapter.
         holder.tvAppCompanyName.setText(app.getCompanyName());
 
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault());
-        String dateStr = sdf.format(app.getAppliedDate());
+        String dateStr = sdf.format(new Date(app.getAppliedDate()));
         holder.tvAppDate.setText("Ngày ứng tuyển: " + dateStr);
 
-        holder.tvAppStatus.setText(app.getStatus());
+        // Hiển thị nhãn tiếng Việt, dù trong Firestore lưu "Pending"/"Accepted"...
+        holder.tvAppStatus.setText(Application.label(app.getStatus()));
 
-        switch (app.getStatus()) {
-            case "Được duyệt":
+        switch (Application.normalize(app.getStatus())) {
+            case Application.STATUS_ACCEPTED:
                 holder.tvAppStatus.setTextColor(0xFF4CAF50);
                 holder.tvAppStatus.setBackgroundColor(0xFFE8F5E9);
                 break;
-            case "Từ chối":
+            case Application.STATUS_REJECTED:
                 holder.tvAppStatus.setTextColor(0xFFF44336);
                 holder.tvAppStatus.setBackgroundColor(0xFFFFEBEE);
                 break;
-            default: // "Đang chờ"
+            case Application.STATUS_REVIEWED:
+                holder.tvAppStatus.setTextColor(0xFF1565C0);
+                holder.tvAppStatus.setBackgroundColor(0xFFE3F2FD);
+                break;
+            default: // Pending
                 holder.tvAppStatus.setTextColor(0xFFFF9800);
                 holder.tvAppStatus.setBackgroundColor(0xFFFFF3E0);
                 break;

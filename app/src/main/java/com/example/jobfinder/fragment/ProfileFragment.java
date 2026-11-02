@@ -22,13 +22,13 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.example.jobfinder.activity.MyApplicationsActivity;
 import com.example.jobfinder.activity.NotificationsActivity;
+import com.example.jobfinder.activity.FeedbackActivity;
 
 public class ProfileFragment extends Fragment {
 
     private TextView tvProfileName, tvProfileEmail, tvProfilePhone;
     private EditText etEducation, etExperience, etSkills;
-    private Button btnSaveCv, btnLogout, btnMyApplications, btnNotifications;
-    private FirebaseAuth mAuth;
+    private Button btnSaveCv, btnLogout, btnMyApplications, btnNotifications, btnFeedback;    private FirebaseAuth mAuth;
     private FirebaseFirestore db;
     private String currentUid;
 
@@ -61,7 +61,7 @@ public class ProfileFragment extends Fragment {
         btnMyApplications = view.findViewById(R.id.btnMyApplications);
         btnMyApplications = view.findViewById(R.id.btnMyApplications);
         btnNotifications = view.findViewById(R.id.btnNotifications);
-
+        btnFeedback = view.findViewById(R.id.btnFeedback);
         loadUserProfile();
 
         btnSaveCv.setOnClickListener(v -> saveCvInfo());
@@ -72,7 +72,8 @@ public class ProfileFragment extends Fragment {
 
         btnNotifications.setOnClickListener(v ->
                 startActivity(new Intent(getActivity(), NotificationsActivity.class)));
-
+        btnFeedback.setOnClickListener(v ->
+                startActivity(new Intent(getActivity(), FeedbackActivity.class)));
         btnLogout.setOnClickListener(v -> {
             mAuth.signOut();
             Intent intent = new Intent(getActivity(), LoginActivity.class);

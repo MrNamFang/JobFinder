@@ -1,10 +1,15 @@
 package com.example.jobfinder;
 
+import com.google.firebase.firestore.PropertyName;
+
 import java.io.Serializable;
 
 /**
- * Model đại diện cho 1 đơn ứng tuyển. Sau này tương ứng 1 document trong
- * Firestore collection "applications". Giờ dùng mock data để build UI trước.
+ * Model đại diện cho 1 đơn ứng tuyển, tương ứng 1 document trong
+ * Firestore collection "applications".
+ *
+ * Lưu ý: bên ứng viên ghi các field applicantName / applicantEmail / applicantPhone,
+ * nên dùng @PropertyName để map vào fullName / email / phone ở đây.
  */
 public class JobApplication implements Serializable {
 
@@ -12,11 +17,15 @@ public class JobApplication implements Serializable {
     private String jobId;
     private String employerId;
     private String jobTitle;
+    private String companyName;
     private String userId;
     private String fullName;
     private String email;
     private String phone;
     private String coverLetter;
+    private String education;
+    private String experience;
+    private String skills;
     private long appliedDate;
     private String status; // "Pending" / "Reviewed" / "Accepted" / "Rejected"
 
@@ -51,20 +60,38 @@ public class JobApplication implements Serializable {
     public String getJobTitle() { return jobTitle; }
     public void setJobTitle(String jobTitle) { this.jobTitle = jobTitle; }
 
+    public String getCompanyName() { return companyName; }
+    public void setCompanyName(String companyName) { this.companyName = companyName; }
+
     public String getUserId() { return userId; }
     public void setUserId(String userId) { this.userId = userId; }
 
+    @PropertyName("applicantName")
     public String getFullName() { return fullName; }
+    @PropertyName("applicantName")
     public void setFullName(String fullName) { this.fullName = fullName; }
 
+    @PropertyName("applicantEmail")
     public String getEmail() { return email; }
+    @PropertyName("applicantEmail")
     public void setEmail(String email) { this.email = email; }
 
+    @PropertyName("applicantPhone")
     public String getPhone() { return phone; }
+    @PropertyName("applicantPhone")
     public void setPhone(String phone) { this.phone = phone; }
 
     public String getCoverLetter() { return coverLetter; }
     public void setCoverLetter(String coverLetter) { this.coverLetter = coverLetter; }
+
+    public String getEducation() { return education; }
+    public void setEducation(String education) { this.education = education; }
+
+    public String getExperience() { return experience; }
+    public void setExperience(String experience) { this.experience = experience; }
+
+    public String getSkills() { return skills; }
+    public void setSkills(String skills) { this.skills = skills; }
 
     public long getAppliedDate() { return appliedDate; }
     public void setAppliedDate(long appliedDate) { this.appliedDate = appliedDate; }
