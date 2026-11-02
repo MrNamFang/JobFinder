@@ -1,13 +1,13 @@
 package com.example.jobfinder.admin;
 
 import android.os.Bundle;
+import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
-import android.widget.Button;
 
 import com.example.jobfinder.R;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -17,56 +17,31 @@ import java.util.List;
 
 public class AdminUsersActivity extends AppCompatActivity {
 
-    // Danh sách tài khoản
     private RecyclerView rvUsers;
-
-    // Hiển thị tổng số tài khoản
     private TextView tvUserCount;
-
-    // Danh sách User
     private List<AdminUser> userList;
-
-    // Adapter kết nối dữ liệu với RecyclerView
     private AdminUserAdapter adapter;
-
-    // Firebase Firestore
     private FirebaseFirestore db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // Hiển thị giao diện activity_admin_users.xml
         setContentView(R.layout.activity_admin_users);
 
         Button btnBack = findViewById(R.id.btnBack);
+        btnBack.setOnClickListener(v -> finish());
 
-        btnBack.setOnClickListener(v -> {
-            finish();
-        });
-
-        // Ánh xạ View
         rvUsers = findViewById(R.id.rvUsers);
         tvUserCount = findViewById(R.id.tvUserCount);
 
-        // Khởi tạo Firebase
         db = FirebaseFirestore.getInstance();
-
-        // Tạo danh sách rỗng
         userList = new ArrayList<>();
-
-        // Tạo Adapter
         adapter = new AdminUserAdapter(userList);
 
-        // RecyclerView hiển thị theo chiều dọc
-        rvUsers.setLayoutManager(
-                new LinearLayoutManager(this)
-        );
-
-        // Gắn Adapter vào RecyclerView
+        rvUsers.setLayoutManager(new LinearLayoutManager(this));
         rvUsers.setAdapter(adapter);
 
-        // Lấy danh sách tài khoản
         loadUsers();
     }
 
@@ -76,29 +51,30 @@ public class AdminUsersActivity extends AppCompatActivity {
                 .get()
                 .addOnSuccessListener(result -> {
 
-                    // Xóa dữ liệu cũ
                     userList.clear();
 
-                    // Duyệt từng tài khoản
                     for (var document : result) {
 
                         String id = document.getId();
 
-                        String name = document.getString("name");
+                        // Ưu tiên đọc "fullName", nếu không có thì đọc "name"
+                        String name = document.getString("fullName");
+                        if (name == null) {
+                            name = document.getString("name");
+                        }
 
                         String email = document.getString("email");
-
                         String role = document.getString("role");
 
-                        Boolean blockedValue =
-                                document.getBoolean("blocked");
+                        // Kiểm tra trạng thái khóa qua cả boolean "blocked" và chuỗi "status" == "banned"
+                        Boolean blockedValue = document.getBoolean("blocked");
+                        String statusValue = document.getString("status");
 
-                        boolean blocked =
-                                blockedValue != null && blockedValue;
+                        boolean blocked = (blockedValue != null && blockedValue)
+                                || "banned".equalsIgnoreCase(statusValue);
 
-                        // Xử lý trường hợp thiếu dữ liệu
-                        if (name == null) {
-                            name = "Chưa có tên";
+                        if (name == null || name.trim().isEmpty()) {
+                            name = "Người dùng (" + id.substring(0, Math.min(6, id.length())) + ")";
                         }
 
                         if (email == null) {
@@ -106,10 +82,9 @@ public class AdminUsersActivity extends AppCompatActivity {
                         }
 
                         if (role == null) {
-                            role = "Chưa xác định";
+                            role = "seeker";
                         }
 
-                        // Thêm tài khoản vào danh sách
                         userList.add(
                                 new AdminUser(
                                         id,
@@ -121,26 +96,15 @@ public class AdminUsersActivity extends AppCompatActivity {
                         );
                     }
 
-                    // Hiển thị tổng số tài khoản
-                    tvUserCount.setText(
-                            "Tổng số tài khoản: " + userList.size()
-                    );
-
-                    // Cập nhật danh sách
+                    tvUserCount.setText("Tổng số tài khoản: " + userList.size());
                     adapter.notifyDataSetChanged();
                 })
-
-                // Nếu Firebase xảy ra lỗi
                 .addOnFailureListener(e -> {
-
-                    tvUserCount.setText(
-                            "Lỗi tải tài khoản"
-                    );
-
-                    android.widget.Toast.makeText(
+                    tvUserCount.setText("Lỗi tải tài khoản");
+                    Toast.makeText(
                             AdminUsersActivity.this,
                             "Lỗi: " + e.getMessage(),
-                            android.widget.Toast.LENGTH_LONG
+                            Toast.LENGTH_LONG
                     ).show();
                 });
     }

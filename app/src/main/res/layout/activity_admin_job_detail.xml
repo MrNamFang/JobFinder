@@ -25,8 +25,23 @@
                 android:layout_height="wrap_content"
                 android:text="Tên công việc"
                 android:textColor="#222222"
-                android:textSize="27sp"
+                android:textSize="24sp"
                 android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvDetailStatus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp"
+                android:paddingTop="4dp"
+                android:paddingBottom="4dp"
+                android:text="Trạng thái: Chờ duyệt"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:textColor="#E65100"
+                android:background="#FFE0B2" />
 
             <TextView
                 android:id="@+id/tvDetailCompany"
@@ -67,10 +82,10 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="25dp"
-                android:text="Yêu cầu"
+                android:layout_marginTop="20dp"
+                android:text="Yêu cầu công việc"
                 android:textColor="#222222"
-                android:textSize="20sp"
+                android:textSize="18sp"
                 android:textStyle="bold" />
 
             <TextView
@@ -85,10 +100,10 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="25dp"
+                android:layout_marginTop="20dp"
                 android:text="Mô tả công việc"
                 android:textColor="#222222"
-                android:textSize="20sp"
+                android:textSize="18sp"
                 android:textStyle="bold" />
 
             <TextView
@@ -104,13 +119,49 @@
 
     </ScrollView>
 
-    <!-- Nút quay lại cố định ở dưới cùng -->
-    <Button
-        android:id="@+id/btnBack"
-        android:layout_width="wrap_content"
+    <!-- Khu vực nút kiểm duyệt của Admin -->
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
-        android:layout_marginBottom="10dp"
-        android:text="← Quay lại" />
+        android:orientation="vertical"
+        android:padding="12dp"
+        android:background="#FFFFFF">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:weightSum="2">
+
+            <Button
+                android:id="@+id/btnApprove"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginEnd="6dp"
+                android:backgroundTint="#4CAF50"
+                android:text="✓ Duyệt bài"
+                android:textColor="#FFFFFF" />
+
+            <Button
+                android:id="@+id/btnReject"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="6dp"
+                android:backgroundTint="#F44336"
+                android:text="✕ Từ chối bài"
+                android:textColor="#FFFFFF" />
+
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/btnBack"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:text="Quay lại danh sách" />
+
+    </LinearLayout>
 
 </LinearLayout>

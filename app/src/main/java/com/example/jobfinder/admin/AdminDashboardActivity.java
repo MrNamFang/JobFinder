@@ -14,6 +14,7 @@ public class AdminDashboardActivity extends AppCompatActivity {
 
     private TextView tvTotalUsers;
     private TextView tvTotalJobs;
+    private TextView tvTotalApplications;
     private TextView tvTotalRecruiters;
 
     private FirebaseFirestore db;
@@ -26,6 +27,7 @@ public class AdminDashboardActivity extends AppCompatActivity {
 
         tvTotalUsers = findViewById(R.id.tvTotalUsers);
         tvTotalJobs = findViewById(R.id.tvTotalJobs);
+        tvTotalApplications = findViewById(R.id.tvTotalApplications);
         tvTotalRecruiters = findViewById(R.id.tvTotalRecruiters);
 
         Button btnManageUsers = findViewById(R.id.btnManageUsers);
@@ -34,43 +36,29 @@ public class AdminDashboardActivity extends AppCompatActivity {
 
         db = FirebaseFirestore.getInstance();
 
-        loadTotalUsers();
-        loadTotalJobs();
-        loadTotalRecruiters();
-
         btnManageUsers.setOnClickListener(v -> {
-
-            android.widget.Toast.makeText(
-                    AdminDashboardActivity.this,
-                    "ĐÃ NHẬN CLICK",
-                    android.widget.Toast.LENGTH_SHORT
-            ).show();
-
-            Intent intent = new Intent(
-                    AdminDashboardActivity.this,
-                    AdminUsersActivity.class
-            );
-
+            Intent intent = new Intent(AdminDashboardActivity.this, AdminUsersActivity.class);
             startActivity(intent);
         });
 
         btnManageJobs.setOnClickListener(v -> {
-            Intent intent = new Intent(
-                    AdminDashboardActivity.this,
-                    AdminJobsActivity.class
-            );
+            Intent intent = new Intent(AdminDashboardActivity.this, AdminJobsActivity.class);
             startActivity(intent);
         });
 
         btnManageReports.setOnClickListener(v -> {
-
-            Intent intent = new Intent(
-                    AdminDashboardActivity.this,
-                    AdminReportsActivity.class
-            );
-
+            Intent intent = new Intent(AdminDashboardActivity.this, AdminReportsActivity.class);
             startActivity(intent);
         });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        loadTotalUsers();
+        loadTotalJobs();
+        loadTotalApplications();
+        loadTotalRecruiters();
     }
 
     private void loadTotalUsers() {
@@ -86,6 +74,21 @@ public class AdminDashboardActivity extends AppCompatActivity {
                 .get()
                 .addOnSuccessListener(result -> {
                     tvTotalJobs.setText(String.valueOf(result.size()));
+                });
+    }
+
+    private void loadTotalApplications() {
+        db.collection("applications")
+                .get()
+                .addOnSuccessListener(result -> {
+                    if (tvTotalApplications != null) {
+                        tvTotalApplications.setText(String.valueOf(result.size()));
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    if (tvTotalApplications != null) {
+                        tvTotalApplications.setText("0");
+                    }
                 });
     }
 

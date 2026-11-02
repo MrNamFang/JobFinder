@@ -58,6 +58,10 @@ public class AdminReport {
         return status;
     }
 
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
     public String getAdminReply() {
         return adminReply;
     }

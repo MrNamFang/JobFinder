@@ -2,9 +2,9 @@ package com.example.jobfinder.admin;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.Button;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -34,9 +34,7 @@ public class AdminJobsActivity extends AppCompatActivity {
 
         Button btnBack = findViewById(R.id.btnBack);
 
-        btnBack.setOnClickListener(v -> {
-            finish();
-        });
+        btnBack.setOnClickListener(v -> finish());
 
         rvJobs = findViewById(R.id.rvJobs);
         tvJobCount = findViewById(R.id.tvJobCount);
@@ -48,7 +46,6 @@ public class AdminJobsActivity extends AppCompatActivity {
         adapter = new AdminJobAdapter(
                 jobList,
                 job -> {
-
                     Intent intent = new Intent(
                             AdminJobsActivity.this,
                             AdminJobDetailActivity.class
@@ -62,18 +59,20 @@ public class AdminJobsActivity extends AppCompatActivity {
                     intent.putExtra("location", job.getLocation());
                     intent.putExtra("salary", job.getSalary());
                     intent.putExtra("requirements", job.getRequirements());
+                    intent.putExtra("status", job.getStatus());
                     intent.putExtra("postedDate", job.getPostedDate());
 
                     startActivity(intent);
                 }
         );
 
-        rvJobs.setLayoutManager(
-                new LinearLayoutManager(this)
-        );
-
+        rvJobs.setLayoutManager(new LinearLayoutManager(this));
         rvJobs.setAdapter(adapter);
+    }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
         loadJobs();
     }
 
@@ -89,62 +88,51 @@ public class AdminJobsActivity extends AppCompatActivity {
 
                         String id = document.getId();
 
-                        String title =
-                                document.getString("title");
+                        String title = document.getString("title");
 
-                        String company =
-                                document.getString("companyName");
-
-                        String description =
-                                document.getString("description");
-
-                        String jobType =
-                                document.getString("jobType");
-
-                        String location =
-                                document.getString("rental");
-
-                        String salary =
-                                document.getString("salary");
-
-                        String requirements =
-                                document.getString("requirements");
-
-                        Long postedDateValue =
-                                document.getLong("postedDate");
-
-                        long postedDate =
-                                postedDateValue != null
-                                        ? postedDateValue
-                                        : 0;
-
-                        if (title == null) {
-                            title = "Chưa có tên công việc";
-                        }
-
+                        String company = document.getString("companyName");
                         if (company == null) {
-                            company = "Chưa có công ty";
+                            company = document.getString("company");
                         }
 
-                        if (description == null) {
-                            description = "Chưa có mô tả";
-                        }
+                        String description = document.getString("description");
+                        String jobType = document.getString("jobType");
 
-                        if (jobType == null) {
-                            jobType = "Chưa xác định";
-                        }
-
+                        // Sửa lỗi đọc địa điểm từ "rental" sang các trường location / address / province
+                        String location = document.getString("location");
                         if (location == null) {
-                            location = "Chưa có địa điểm";
+                            location = document.getString("address");
+                        }
+                        if (location == null) {
+                            location = document.getString("province");
                         }
 
+                        String salary = document.getString("salary");
                         if (salary == null) {
-                            salary = "Chưa có mức lương";
+                            salary = document.getString("salaryDisplayText");
                         }
 
-                        if (requirements == null) {
-                            requirements = "Chưa có yêu cầu";
+                        String requirements = document.getString("requirements");
+
+                        // Trạng thái duyệt bài từ Admin (pending / approved / rejected)
+                        String status = document.getString("adminStatus");
+                        if (status == null) {
+                            status = document.getString("status");
                         }
+                        if (status == null) {
+                            status = "pending";
+                        }
+
+                        Long postedDateValue = document.getLong("postedDate");
+                        long postedDate = postedDateValue != null ? postedDateValue : 0;
+
+                        if (title == null) title = "Chưa có tiêu đề";
+                        if (company == null) company = "Chưa có công ty";
+                        if (description == null) description = "Chưa có mô tả";
+                        if (jobType == null) jobType = "Toàn thời gian";
+                        if (location == null) location = "Chưa có địa điểm";
+                        if (salary == null) salary = "Thỏa thuận";
+                        if (requirements == null) requirements = "Chưa có yêu cầu";
 
                         jobList.add(
                                 new AdminJob(
@@ -156,27 +144,20 @@ public class AdminJobsActivity extends AppCompatActivity {
                                         location,
                                         salary,
                                         requirements,
+                                        status,
                                         postedDate
                                 )
                         );
                     }
 
-                    tvJobCount.setText(
-                            "Tổng số bài đăng: "
-                                    + jobList.size()
-                    );
-
+                    tvJobCount.setText("Tổng số bài đăng: " + jobList.size());
                     adapter.notifyDataSetChanged();
                 })
                 .addOnFailureListener(e -> {
-
-                    tvJobCount.setText(
-                            "Không thể tải bài đăng"
-                    );
-
+                    tvJobCount.setText("Không thể tải bài đăng");
                     Toast.makeText(
                             AdminJobsActivity.this,
-                            "Lỗi: " + e.getMessage(),
+                            "Lỗi tải bài: " + e.getMessage(),
                             Toast.LENGTH_LONG
                     ).show();
                 });

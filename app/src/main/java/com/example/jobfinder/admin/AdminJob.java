@@ -10,6 +10,7 @@ public class AdminJob {
     private String location;
     private String salary;
     private String requirements;
+    private String status; // "pending", "approved", "rejected"
     private long postedDate;
 
     public AdminJob() {
@@ -24,6 +25,7 @@ public class AdminJob {
             String location,
             String salary,
             String requirements,
+            String status,
             long postedDate) {
 
         this.id = id;
@@ -34,6 +36,7 @@ public class AdminJob {
         this.location = location;
         this.salary = salary;
         this.requirements = requirements;
+        this.status = status;
         this.postedDate = postedDate;
     }
 
@@ -67,6 +70,14 @@ public class AdminJob {
 
     public String getRequirements() {
         return requirements;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 
     public long getPostedDate() {

@@ -1,5 +1,6 @@
 package com.example.jobfinder.admin;
 
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,9 +20,7 @@ public class AdminJobAdapter
         extends RecyclerView.Adapter<AdminJobAdapter.JobViewHolder> {
 
     private List<AdminJob> jobList;
-
     private FirebaseFirestore db;
-
     private OnJobClickListener listener;
 
     public interface OnJobClickListener {
@@ -34,7 +33,6 @@ public class AdminJobAdapter
 
         this.jobList = jobList;
         this.listener = listener;
-
         db = FirebaseFirestore.getInstance();
     }
 
@@ -45,11 +43,7 @@ public class AdminJobAdapter
             int viewType) {
 
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(
-                        R.layout.item_admin_job,
-                        parent,
-                        false
-                );
+                .inflate(R.layout.item_admin_job, parent, false);
 
         return new JobViewHolder(view);
     }
@@ -61,50 +55,39 @@ public class AdminJobAdapter
 
         AdminJob job = jobList.get(position);
 
-        holder.tvJobTitle.setText(
-                job.getTitle()
-        );
+        holder.tvJobTitle.setText(job.getTitle());
+        holder.tvJobCompany.setText("Công ty: " + job.getCompany());
+        holder.tvJobLocation.setText("Địa điểm: " + job.getLocation());
 
-        holder.tvJobCompany.setText(
-                "Công ty: " + job.getCompany()
-        );
+        String status = job.getStatus();
+        if ("approved".equalsIgnoreCase(status)) {
+            holder.tvJobStatus.setText("Trạng thái: Đã duyệt (Xanh)");
+            holder.tvJobStatus.setTextColor(Color.parseColor("#2E7D32"));
+        } else if ("rejected".equalsIgnoreCase(status)) {
+            holder.tvJobStatus.setText("Trạng thái: Bị từ chối (Đỏ)");
+            holder.tvJobStatus.setTextColor(Color.parseColor("#C62828"));
+        } else {
+            holder.tvJobStatus.setText("Trạng thái: Chờ duyệt (Vàng)");
+            holder.tvJobStatus.setTextColor(Color.parseColor("#E65100"));
+        }
 
-        holder.tvJobLocation.setText(
-                "Địa điểm: " + job.getLocation()
-        );
-
-        holder.tvJobStatus.setText(
-                "Loại: " + job.getJobType()
-        );
-
-        // Bấm vào bài đăng để xem chi tiết
+        // Bấm vào bài đăng để xem chi tiết & kiểm duyệt
         holder.itemView.setOnClickListener(v -> {
-
             if (listener != null) {
                 listener.onJobClick(job);
             }
         });
 
         holder.btnDeleteJob.setOnClickListener(v -> {
-
             db.collection("jobs")
                     .document(job.getId())
                     .delete()
                     .addOnSuccessListener(aVoid -> {
-
-                        int currentPosition =
-                                holder.getAdapterPosition();
-
-                        if (currentPosition !=
-                                RecyclerView.NO_POSITION) {
-
+                        int currentPosition = holder.getAdapterPosition();
+                        if (currentPosition != RecyclerView.NO_POSITION) {
                             jobList.remove(currentPosition);
-
-                            notifyItemRemoved(
-                                    currentPosition
-                            );
+                            notifyItemRemoved(currentPosition);
                         }
-
                         Toast.makeText(
                                 holder.itemView.getContext(),
                                 "Đã xóa bài đăng",
@@ -112,7 +95,6 @@ public class AdminJobAdapter
                         ).show();
                     })
                     .addOnFailureListener(e -> {
-
                         Toast.makeText(
                                 holder.itemView.getContext(),
                                 "Lỗi: " + e.getMessage(),
@@ -134,38 +116,16 @@ public class AdminJobAdapter
         TextView tvJobCompany;
         TextView tvJobLocation;
         TextView tvJobStatus;
-
         Button btnDeleteJob;
 
-        public JobViewHolder(
-                @NonNull View itemView) {
-
+        public JobViewHolder(@NonNull View itemView) {
             super(itemView);
 
-            tvJobTitle =
-                    itemView.findViewById(
-                            R.id.tvJobTitle
-                    );
-
-            tvJobCompany =
-                    itemView.findViewById(
-                            R.id.tvJobCompany
-                    );
-
-            tvJobLocation =
-                    itemView.findViewById(
-                            R.id.tvJobLocation
-                    );
-
-            tvJobStatus =
-                    itemView.findViewById(
-                            R.id.tvJobStatus
-                    );
-
-            btnDeleteJob =
-                    itemView.findViewById(
-                            R.id.btnDeleteJob
-                    );
+            tvJobTitle = itemView.findViewById(R.id.tvJobTitle);
+            tvJobCompany = itemView.findViewById(R.id.tvJobCompany);
+            tvJobLocation = itemView.findViewById(R.id.tvJobLocation);
+            tvJobStatus = itemView.findViewById(R.id.tvJobStatus);
+            btnDeleteJob = itemView.findViewById(R.id.btnDeleteJob);
         }
     }
 }

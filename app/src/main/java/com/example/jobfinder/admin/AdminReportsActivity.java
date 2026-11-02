@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.jobfinder.R;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,10 +20,8 @@ public class AdminReportsActivity extends AppCompatActivity {
 
     private RecyclerView rvReports;
     private TextView tvReportCount;
-
     private List<AdminReport> reportList;
     private AdminReportAdapter adapter;
-
     private FirebaseFirestore db;
 
     @Override
@@ -31,125 +30,102 @@ public class AdminReportsActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_admin_reports);
 
-        // Nút quay lại
         Button btnBack = findViewById(R.id.btnBack);
-
         btnBack.setOnClickListener(v -> finish());
 
-        // Ánh xạ giao diện
         rvReports = findViewById(R.id.rvReports);
         tvReportCount = findViewById(R.id.tvReportCount);
 
-        // Firebase
         db = FirebaseFirestore.getInstance();
-
-        // Danh sách feedback
         reportList = new ArrayList<>();
-
-        // Adapter
         adapter = new AdminReportAdapter(reportList);
 
-        // RecyclerView
         rvReports.setLayoutManager(new LinearLayoutManager(this));
         rvReports.setAdapter(adapter);
 
-        // Tải feedback
         loadReports();
     }
 
     private void loadReports() {
+        // Thử tải từ collection "reports" trước, nếu rỗng thì tải từ "feedbacks"
+        db.collection("reports")
+                .get()
+                .addOnSuccessListener(result -> {
+                    if (result != null && !result.isEmpty()) {
+                        adapter.setCollectionName("reports");
+                        parseDocs(result);
+                    } else {
+                        loadFromFeedbacks();
+                    }
+                })
+                .addOnFailureListener(e -> loadFromFeedbacks());
+    }
 
+    private void loadFromFeedbacks() {
         db.collection("feedbacks")
                 .get()
                 .addOnSuccessListener(result -> {
-
-                    reportList.clear();
-
-                    // Kiểm tra số document lấy được
-                    Toast.makeText(
-                            AdminReportsActivity.this,
-                            "Tìm thấy " + result.size() + " feedbacks",
-                            Toast.LENGTH_SHORT
-                    ).show();
-
-                    for (var document : result) {
-
-                        android.util.Log.d(
-                                "FEEDBACK_DEBUG",
-                                "DOCUMENT = " + document.getData()
-                        );
-
-                        String id = document.getId();
-
-                        String userName = document.getString("userName");
-                        String userEmail = document.getString("userEmail");
-                        String userId = document.getString("userId");
-
-                        String content = document.getString("content");
-
-
-                        String status = document.getString("status");
-                        String adminReply = document.getString("adminReply");
-
-                        // Không bắt buộc phải đọc createdAt
-                        // nên tạm thời bỏ qua để tránh lỗi kiểu dữ liệu
-                        long createdAt = 0;
-
-                        if (userName == null) {
-                            userName = "Chưa có tên";
-                        }
-
-                        if (userEmail == null) {
-                            userEmail = "Chưa có email";
-                        }
-
-                        if (userId == null) {
-                            userId = "";
-                        }
-
-                        if (content == null) {
-                            content = "Không có nội dung";
-                        }
-
-                        if (status == null) {
-                            status = "Chưa xử lý";
-                        }
-
-                        if (adminReply == null) {
-                            adminReply = "";
-                        }
-
-                        AdminReport report = new AdminReport(
-                                id,
-                                userName,
-                                userEmail,
-                                userId,
-                                content,
-                                status,
-                                adminReply,
-                                createdAt
-                        );
-
-                        reportList.add(report);
-                    }
-
-                    tvReportCount.setText(
-                            "Tổng số feedback: " + reportList.size()
-                    );
-
-                    adapter.notifyDataSetChanged();
-
+                    adapter.setCollectionName("feedbacks");
+                    parseDocs(result);
                 })
                 .addOnFailureListener(e -> {
-
-                    // Hiện lỗi Firebase cụ thể
-                    tvReportCount.setText("Lỗi tải feedback");
-
+                    tvReportCount.setText("Lỗi tải báo cáo / feedback");
                     Toast.makeText(
                             AdminReportsActivity.this,
-                            "LỖI FIREBASE:\n" + e.getMessage(),
+                            "Lỗi: " + e.getMessage(),
                             Toast.LENGTH_LONG
                     ).show();
                 });
+    }
+
+    private void parseDocs(QuerySnapshot result) {
+        reportList.clear();
+
+        for (var document : result) {
+            String id = document.getId();
+
+            String userName = document.getString("userName");
+            if (userName == null) userName = document.getString("reporterName");
+
+            String userEmail = document.getString("userEmail");
+            if (userEmail == null) userEmail = document.getString("reporterEmail");
+
+            String userId = document.getString("userId");
+            if (userId == null) userId = document.getString("reporterId");
+
+            String content = document.getString("content");
+            if (content == null) content = document.getString("description");
+            if (content == null) content = document.getString("reason");
+
+            String status = document.getString("status");
+            String adminReply = document.getString("adminReply");
+
+            long createdAt = 0;
+            Long createdLong = document.getLong("createdAt");
+            if (createdLong != null) {
+                createdAt = createdLong;
+            }
+
+            if (userName == null) userName = "Người dùng ẩn danh";
+            if (userEmail == null) userEmail = "Không có email";
+            if (userId == null) userId = "";
+            if (content == null) content = "Không có nội dung chi tiết";
+            if (status == null) status = "pending";
+            if (adminReply == null) adminReply = "";
+
+            reportList.add(new AdminReport(
+                    id,
+                    userName,
+                    userEmail,
+                    userId,
+                    content,
+                    status,
+                    adminReply,
+                    createdAt
+            ));
+        }
+
+        tvReportCount.setText("Tổng số báo cáo / khiếu nại: " + reportList.size());
+        adapter.notifyDataSetChanged();
     }
 }
