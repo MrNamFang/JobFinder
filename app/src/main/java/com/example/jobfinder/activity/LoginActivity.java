@@ -47,6 +47,10 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
+        if (getIntent().getBooleanExtra("logout", false)) {
+            mAuth.signOut();
+            return;
+        }
         // Nếu đã đăng nhập từ trước, kiểm tra role rồi vào đúng màn hình
         if (mAuth.getCurrentUser() != null) {
             goToMain();

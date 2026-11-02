@@ -77,8 +77,10 @@ public class ProfileFragment extends Fragment {
         btnLogout.setOnClickListener(v -> {
             mAuth.signOut();
             Intent intent = new Intent(getActivity(), LoginActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            intent.putExtra("logout", true);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
             startActivity(intent);
+            if (getActivity() != null) getActivity().finish();
         });
     }
 
