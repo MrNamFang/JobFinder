@@ -56,28 +56,46 @@ public class AdminReportAdapter
         holder.tvContent.setText("Nội dung: " + report.getContent());
 
         String status = report.getStatus();
-        if ("resolved".equalsIgnoreCase(status) || "Đã xử lý".equalsIgnoreCase(status)) {
-            holder.tvReportStatus.setText("Trạng thái: Đã xử lý (Xanh)");
+        boolean isResolved = "resolved".equalsIgnoreCase(status) || "Đã xử lý".equalsIgnoreCase(status);
+
+        if (isResolved) {
+            holder.tvReportStatus.setText("Trạng thái: Đã giải quyết xong (Xanh)");
             holder.tvReportStatus.setTextColor(Color.parseColor("#2E7D32"));
+            holder.btnResolveReport.setText("Mở lại báo cáo");
+            holder.btnResolveReport.setBackgroundColor(Color.parseColor("#FF9800"));
         } else {
-            holder.tvReportStatus.setText("Trạng thái: Chưa xử lý (Chờ giải quyết)");
+            holder.tvReportStatus.setText("Trạng thái: Đang chờ xử lý (Cam)");
             holder.tvReportStatus.setTextColor(Color.parseColor("#E65100"));
+            holder.btnResolveReport.setText("✓ Duyệt xử lý");
+            holder.btnResolveReport.setBackgroundColor(Color.parseColor("#4CAF50"));
         }
 
+        // Bấm nút để chuyển đổi trạng thái Duyệt xử lý <-> Mở lại
         holder.btnResolveReport.setOnClickListener(v -> {
+            String newStatus = isResolved ? "pending" : "resolved";
+
             db.collection(collectionName)
                     .document(report.getId())
-                    .update("status", "resolved")
+                    .update("status", newStatus)
                     .addOnSuccessListener(aVoid -> {
-                        report.setStatus("resolved");
+                        report.setStatus(newStatus);
                         notifyItemChanged(position);
-                        Toast.makeText(holder.itemView.getContext(), "Đã đánh dấu xử lý xong báo cáo", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(
+                                holder.itemView.getContext(),
+                                isResolved ? "Đã mở lại báo cáo!" : "Đã duyệt xử lý xong báo cáo!",
+                                Toast.LENGTH_SHORT
+                        ).show();
                     })
                     .addOnFailureListener(e -> {
-                        Toast.makeText(holder.itemView.getContext(), "Lỗi: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(
+                                holder.itemView.getContext(),
+                                "Lỗi cập nhật: " + e.getMessage(),
+                                Toast.LENGTH_SHORT
+                        ).show();
                     });
         });
 
+        // Nút xóa báo cáo
         holder.btnDeleteReport.setOnClickListener(v -> {
             db.collection(collectionName)
                     .document(report.getId())
@@ -88,10 +106,18 @@ public class AdminReportAdapter
                             reportList.remove(currentPos);
                             notifyItemRemoved(currentPos);
                         }
-                        Toast.makeText(holder.itemView.getContext(), "Đã xóa báo cáo", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(
+                                holder.itemView.getContext(),
+                                "Đã xóa báo cáo khỏi hệ thống!",
+                                Toast.LENGTH_SHORT
+                        ).show();
                     })
                     .addOnFailureListener(e -> {
-                        Toast.makeText(holder.itemView.getContext(), "Lỗi: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(
+                                holder.itemView.getContext(),
+                                "Lỗi xóa: " + e.getMessage(),
+                                Toast.LENGTH_SHORT
+                        ).show();
                     });
         });
     }
