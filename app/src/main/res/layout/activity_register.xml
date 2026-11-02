@@ -2,7 +2,8 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="#F8FAFC">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -14,14 +15,19 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Đăng ký tài khoản"
-            android:textSize="24sp"
+            android:textColor="#1E293B"
+            android:textSize="26sp"
             android:textStyle="bold"
             android:layout_marginBottom="24dp" />
 
         <EditText
             android:id="@+id/etFullName"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="52dp"
+            android:background="#FFFFFF"
+            android:paddingHorizontal="16dp"
+            android:textColor="#0F172A"
+            android:textColorHint="#94A3B8"
             android:hint="Họ và tên"
             android:inputType="textPersonName"
             android:layout_marginBottom="12dp" />
@@ -29,7 +35,11 @@
         <EditText
             android:id="@+id/etEmail"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="52dp"
+            android:background="#FFFFFF"
+            android:paddingHorizontal="16dp"
+            android:textColor="#0F172A"
+            android:textColorHint="#94A3B8"
             android:hint="Email"
             android:inputType="textEmailAddress"
             android:layout_marginBottom="12dp" />
@@ -37,7 +47,11 @@
         <EditText
             android:id="@+id/etPhone"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="52dp"
+            android:background="#FFFFFF"
+            android:paddingHorizontal="16dp"
+            android:textColor="#0F172A"
+            android:textColorHint="#94A3B8"
             android:hint="Số điện thoại"
             android:inputType="phone"
             android:layout_marginBottom="12dp" />
@@ -45,7 +59,11 @@
         <EditText
             android:id="@+id/etPassword"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="52dp"
+            android:background="#FFFFFF"
+            android:paddingHorizontal="16dp"
+            android:textColor="#0F172A"
+            android:textColorHint="#94A3B8"
             android:hint="Mật khẩu"
             android:inputType="textPassword"
             android:layout_marginBottom="12dp" />
@@ -53,23 +71,30 @@
         <EditText
             android:id="@+id/etConfirmPassword"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="52dp"
+            android:background="#FFFFFF"
+            android:paddingHorizontal="16dp"
+            android:textColor="#0F172A"
+            android:textColorHint="#94A3B8"
             android:hint="Xác nhận mật khẩu"
             android:inputType="textPassword"
-            android:layout_marginBottom="16dp" />
+            android:layout_marginBottom="20dp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Bạn là:"
-            android:textStyle="bold" />
+            android:textColor="#1E293B"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="8dp" />
 
         <RadioGroup
             android:id="@+id/rgRole"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:layout_marginBottom="20dp">
+            android:layout_marginBottom="24dp">
 
             <RadioButton
                 android:id="@+id/rbSeeker"
@@ -77,6 +102,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:checked="true"
+                android:textColor="#0F172A"
                 android:text="Ứng viên" />
 
             <RadioButton
@@ -84,6 +110,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:textColor="#0F172A"
                 android:text="Nhà tuyển dụng" />
 
             <RadioButton
@@ -91,13 +118,18 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="0.8"
+                android:textColor="#0F172A"
                 android:text="Admin" />
         </RadioGroup>
 
         <Button
             android:id="@+id/btnRegister"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="52dp"
+            android:backgroundTint="#2563EB"
+            android:textColor="#FFFFFF"
+            android:textSize="16sp"
+            android:textStyle="bold"
             android:text="Đăng ký" />
 
         <TextView
@@ -106,8 +138,10 @@
             android:layout_height="wrap_content"
             android:text="Đã có tài khoản? Đăng nhập"
             android:layout_gravity="center"
-            android:layout_marginTop="16dp"
-            android:textColor="#2196F3" />
+            android:layout_marginTop="20dp"
+            android:textColor="#2563EB"
+            android:textSize="14sp"
+            android:textStyle="bold" />
 
     </LinearLayout>
 </ScrollView>
