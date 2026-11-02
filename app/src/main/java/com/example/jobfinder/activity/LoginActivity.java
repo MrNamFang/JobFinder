@@ -89,6 +89,12 @@ public class LoginActivity extends AppCompatActivity {
                 .document(user.getUid())
                 .get()
                 .addOnSuccessListener(doc -> {
+                    if (!doc.exists()) {
+                        btnLogin.setEnabled(true);
+                        Toast.makeText(this, "Tài khoản chưa có dữ liệu!", Toast.LENGTH_SHORT).show();
+                        mAuth.signOut();
+                        return;
+                    }
                     String role = doc.getString("role");
                     Intent intent;
 

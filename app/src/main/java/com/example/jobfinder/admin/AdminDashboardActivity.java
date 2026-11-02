@@ -76,7 +76,11 @@ public class AdminDashboardActivity extends AppCompatActivity {
 
         if (btnLogoutAdmin != null) {
             btnLogoutAdmin.setOnClickListener(v -> {
+                com.google.firebase.auth.FirebaseAuth.getInstance().signOut();
                 Toast.makeText(this, "Đã đăng xuất tài khoản Admin!", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(this, com.example.jobfinder.activity.LoginActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(intent);
                 finish();
             });
         }

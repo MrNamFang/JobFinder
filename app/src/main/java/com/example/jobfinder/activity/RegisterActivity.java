@@ -87,7 +87,16 @@ public class RegisterActivity extends AppCompatActivity {
         }
 
         // Lấy vai trò đã chọn
-        String role = (rgRole.getCheckedRadioButtonId() == R.id.rbEmployer) ? "employer" : "seeker";
+        // Lay vai tro da chon (seeker, employer, admin)
+        final String role;
+        int checkedId = rgRole.getCheckedRadioButtonId();
+        if (checkedId == R.id.rbEmployer) {
+            role = "employer";
+        } else if (checkedId == R.id.rbAdmin) {
+            role = "admin";
+        } else {
+            role = "seeker";
+        }
 
         btnRegister.setEnabled(false); // tránh bấm nhiều lần
 

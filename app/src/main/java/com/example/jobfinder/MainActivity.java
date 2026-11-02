@@ -1,5 +1,7 @@
 package com.example.jobfinder;
 
+import android.content.Intent;
+
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -19,6 +21,15 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // Kiem tra neu chua dang nhap thi chuyen ve man Login
+        if (com.google.firebase.auth.FirebaseAuth.getInstance().getCurrentUser() == null) {
+            Intent intent = new Intent(this, com.example.jobfinder.activity.LoginActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+            finish();
+            return;
+        }
         setContentView(R.layout.activity_main);
 
         bottomNavigationView = findViewById(R.id.bottom_navigation);
