@@ -1,11 +1,15 @@
 package com.example.jobfinder.admin;
 
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.jobfinder.R;
@@ -18,6 +22,7 @@ public class AdminJobDetailActivity extends AppCompatActivity {
 
     private TextView tvTitle;
     private TextView tvStatus;
+    private TextView tvRejectReason;
     private TextView tvCompany;
     private TextView tvLocation;
     private TextView tvSalary;
@@ -48,6 +53,7 @@ public class AdminJobDetailActivity extends AppCompatActivity {
 
         tvTitle = findViewById(R.id.tvDetailTitle);
         tvStatus = findViewById(R.id.tvDetailStatus);
+        tvRejectReason = findViewById(R.id.tvRejectReason);
         tvCompany = findViewById(R.id.tvDetailCompany);
         tvLocation = findViewById(R.id.tvDetailLocation);
         tvSalary = findViewById(R.id.tvDetailSalary);
@@ -73,32 +79,80 @@ public class AdminJobDetailActivity extends AppCompatActivity {
         tvRequirements.setText(requirements);
         tvDescription.setText(description);
 
-        updateStatusView(status);
+        updateStatusView(status, null);
+
+        // Nạp lý do từ chối nếu có từ Firestore
+        if (jobId != null && !jobId.isEmpty()) {
+            db.collection("jobs").document(jobId).get()
+                    .addOnSuccessListener(documentSnapshot -> {
+                        if (documentSnapshot.exists()) {
+                            String rejectReason = documentSnapshot.getString("rejectReason");
+                            String latestStatus = documentSnapshot.getString("adminStatus");
+                            if (latestStatus == null) latestStatus = documentSnapshot.getString("status");
+                            updateStatusView(latestStatus, rejectReason);
+                        }
+                    });
+        }
 
         // Nút duyệt bài
-        btnApprove.setOnClickListener(v -> updateJobStatus("approved", "Đã duyệt bài đăng thành công!"));
+        btnApprove.setOnClickListener(v -> {
+            updateJobStatus("approved", "", "Đã duyệt bài đăng thành công!");
+        });
 
-        // Nút từ chối bài
-        btnReject.setOnClickListener(v -> updateJobStatus("rejected", "Đã từ chối bài đăng!"));
+        // Nút từ chối bài (Hiện Popup nhập lý do)
+        btnReject.setOnClickListener(v -> {
+            showRejectDialog();
+        });
     }
 
-    private void updateStatusView(String status) {
+    private void showRejectDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Từ chối bài tuyển dụng");
+        builder.setMessage("Vui lòng nhập lý do từ chối để thông báo cho Nhà tuyển dụng:");
+
+        final EditText input = new EditText(this);
+        input.setHint("VD: Thông tin mức lương chưa rõ ràng, vi phạm tiêu chuẩn cộng đồng...");
+        input.setPadding(30, 20, 30, 20);
+        builder.setView(input);
+
+        builder.setPositiveButton("Xác nhận từ chối", (dialog, which) -> {
+            String reason = input.getText().toString().trim();
+            if (reason.isEmpty()) {
+                reason = "Bài đăng chưa đạt tiêu chuẩn kiểm duyệt của hệ thống.";
+            }
+            updateJobStatus("rejected", reason, "Đã từ chối bài đăng!");
+        });
+
+        builder.setNegativeButton("Hủy", (dialog, which) -> dialog.cancel());
+        builder.show();
+    }
+
+    private void updateStatusView(String status, String rejectReason) {
         if ("approved".equalsIgnoreCase(status)) {
             tvStatus.setText("Trạng thái: Đã duyệt (Xanh)");
             tvStatus.setTextColor(Color.parseColor("#2E7D32"));
             tvStatus.setBackgroundColor(Color.parseColor("#C8E6C9"));
+            tvRejectReason.setVisibility(View.GONE);
         } else if ("rejected".equalsIgnoreCase(status)) {
             tvStatus.setText("Trạng thái: Bị từ chối (Đỏ)");
             tvStatus.setTextColor(Color.parseColor("#C62828"));
             tvStatus.setBackgroundColor(Color.parseColor("#FFCDD2"));
+
+            if (rejectReason != null && !rejectReason.isEmpty()) {
+                tvRejectReason.setVisibility(View.VISIBLE);
+                tvRejectReason.setText("Lý do từ chối: " + rejectReason);
+            } else {
+                tvRejectReason.setVisibility(View.GONE);
+            }
         } else {
             tvStatus.setText("Trạng thái: Chờ duyệt (Vàng)");
             tvStatus.setTextColor(Color.parseColor("#E65100"));
             tvStatus.setBackgroundColor(Color.parseColor("#FFE0B2"));
+            tvRejectReason.setVisibility(View.GONE);
         }
     }
 
-    private void updateJobStatus(String newStatus, String toastMessage) {
+    private void updateJobStatus(String newStatus, String rejectReason, String toastMessage) {
         if (jobId == null || jobId.isEmpty()) {
             Toast.makeText(this, "Không tìm thấy mã bài đăng", Toast.LENGTH_SHORT).show();
             return;
@@ -107,12 +161,15 @@ public class AdminJobDetailActivity extends AppCompatActivity {
         Map<String, Object> updates = new HashMap<>();
         updates.put("adminStatus", newStatus);
         updates.put("status", newStatus);
+        if (rejectReason != null) {
+            updates.put("rejectReason", rejectReason);
+        }
 
         db.collection("jobs")
                 .document(jobId)
                 .update(updates)
                 .addOnSuccessListener(aVoid -> {
-                    updateStatusView(newStatus);
+                    updateStatusView(newStatus, rejectReason);
                     Toast.makeText(AdminJobDetailActivity.this, toastMessage, Toast.LENGTH_SHORT).show();
                 })
                 .addOnFailureListener(e -> {

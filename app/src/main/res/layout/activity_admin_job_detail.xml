@@ -43,6 +43,19 @@
                 android:textColor="#E65100"
                 android:background="#FFE0B2" />
 
+            <!-- LÝ DO TỪ CHỐI (NẾU BỊ TỪ CHỐI) -->
+            <TextView
+                android:id="@+id/tvRejectReason"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:background="#FFEBEE"
+                android:padding="10dp"
+                android:text="Lý do từ chối: ..."
+                android:textColor="#C62828"
+                android:textSize="14sp"
+                android:visibility="gone" />
+
             <TextView
                 android:id="@+id/tvDetailCompany"
                 android:layout_width="match_parent"
