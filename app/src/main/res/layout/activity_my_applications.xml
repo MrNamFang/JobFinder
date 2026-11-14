@@ -1,57 +1,71 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="#F5F5F5">
+    android:fitsSystemWindows="true"
+    android:background="@color/jf_cream">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:padding="12dp">
+        android:orientation="vertical"
+        android:padding="20dp"
+        android:background="@drawable/bg_header">
 
-        <ImageButton
-            android:id="@+id/btnBack"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:src="@android:drawable/ic_menu_close_clear_cancel"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="Quay lại" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <ImageButton
+                android:id="@+id/btnBack"
+                android:layout_width="46dp"
+                android:layout_height="46dp"
+                android:background="@drawable/bg_chip"
+                android:contentDescription="Quay lại"
+                android:src="@drawable/baseline_arrow_back_24"
+                app:tint="@color/jf_mint_ink" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="14dp"
+                android:text="Đơn ứng tuyển"
+                android:textColor="@color/jf_mint_ink"
+                android:textSize="24sp"
+                android:textStyle="bold" />
+        </LinearLayout>
 
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Đơn ứng tuyển của tôi"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            android:layout_marginStart="8dp" />
-
+            android:layout_marginTop="12dp"
+            android:text="Giữ lâu vào một đơn để hủy (chỉ khi đang chờ duyệt)"
+            android:textColor="#1F5A53"
+            android:textSize="13sp" />
     </LinearLayout>
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Giữ để hủy đơn (chỉ áp dụng khi đang chờ duyệt)"
-        android:textSize="12sp"
-        android:textColor="#999999"
-        android:paddingHorizontal="16dp"
-        android:paddingBottom="10dp" />
 
     <TextView
         android:id="@+id/tvEmptyApplications"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:padding="32dp"
+        android:gravity="center"
         android:text="Bạn chưa ứng tuyển công việc nào"
-        android:textAlignment="center"
-        android:textColor="#999999"
-        android:padding="20dp"
+        android:textColor="@color/jf_muted"
+        android:textSize="15sp"
         android:visibility="gone" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerViewApplications"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:paddingHorizontal="12dp" />
-
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:clipToPadding="false"
+        android:paddingHorizontal="20dp"
+        android:paddingTop="16dp"
+        android:paddingBottom="16dp" />
 </LinearLayout>

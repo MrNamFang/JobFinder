@@ -87,6 +87,10 @@
             android:windowSoftInputMode="adjustResize" />
 
         <activity
+            android:name=".EmployerAccountActivity"
+            android:exported="false" />
+
+        <activity
             android:name=".EmployerDashboardHostActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />

@@ -8,30 +8,20 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
-import android.content.Intent;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
-import com.example.jobfinder.activity.LoginActivity;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-/**
- * Màn "Profile công ty": xem + sửa thông tin nhà tuyển dụng, và Đăng xuất.
- *
- * ĐÃ NỐI FIRESTORE THẬT. Document lưu tại collection "employers", với
- * document ID = uid của user đang đăng nhập -- tra cứu trực tiếp bằng
- * .document(uid) thay vì phải query where(), vì mỗi employer chỉ có
- * đúng 1 profile.
- */
 public class EmployerProfileActivity extends AppCompatActivity {
 
     private EditText etCompanyName, etDescription, etAddress, etPhone;
     private TextView tvEmailReadonly;
-    private Button btnSaveProfile, btnLogout;
+    private Button btnSaveProfile;
 
     private FirebaseAuth auth;
     private FirebaseFirestore db;
@@ -48,7 +38,7 @@ public class EmployerProfileActivity extends AppCompatActivity {
             return insets;
         });
 
-        EmployerNav.setup(this, findViewById(R.id.bottomNavEmployer), R.id.nav_profile);
+        findViewById(R.id.btnBack).setOnClickListener(v -> finish());
 
         etCompanyName = findViewById(R.id.etCompanyName);
         etDescription = findViewById(R.id.etDescription);
@@ -56,7 +46,6 @@ public class EmployerProfileActivity extends AppCompatActivity {
         etPhone = findViewById(R.id.etPhone);
         tvEmailReadonly = findViewById(R.id.tvEmailReadonly);
         btnSaveProfile = findViewById(R.id.btnSaveProfile);
-        btnLogout = findViewById(R.id.btnLogout);
 
         auth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
@@ -69,7 +58,6 @@ public class EmployerProfileActivity extends AppCompatActivity {
         loadProfile();
 
         btnSaveProfile.setOnClickListener(v -> saveProfile());
-        btnLogout.setOnClickListener(v -> logout());
     }
 
     private void loadProfile() {
@@ -84,11 +72,6 @@ public class EmployerProfileActivity extends AppCompatActivity {
                         Toast.makeText(this, "Lỗi tải hồ sơ: " + e.getMessage(), Toast.LENGTH_SHORT).show());
     }
 
-    /**
-     * DocumentSnapshot.exists() cho biết document ĐÃ TỪNG được tạo hay
-     * chưa. Employer mới toanh (chưa từng bấm Lưu lần nào) sẽ chưa có
-     * document này -- lúc đó chỉ để các ô trống cho họ tự điền, không báo lỗi.
-     */
     private void handleProfileLoaded(DocumentSnapshot doc) {
         if (doc.exists()) {
             etCompanyName.setText(doc.getString("companyName"));
@@ -96,7 +79,6 @@ public class EmployerProfileActivity extends AppCompatActivity {
             etAddress.setText(doc.getString("address"));
             etPhone.setText(doc.getString("phone"));
         }
-        // Nếu chưa tồn tại document, các ô cứ để trống, chờ user tự nhập và Lưu.
     }
 
     private void saveProfile() {
@@ -123,27 +105,16 @@ public class EmployerProfileActivity extends AppCompatActivity {
 
         btnSaveProfile.setEnabled(false);
 
-        // set() với document ID = uid: nếu document CHƯA từng tồn tại, Firestore
-        // tự tạo mới; nếu ĐÃ tồn tại, ghi đè toàn bộ -- cùng 1 lệnh xử lý được
-        // cả 2 trường hợp "tạo lần đầu" và "cập nhật", không cần code riêng.
         db.collection("employers").document(uid)
                 .set(profile)
                 .addOnSuccessListener(unused -> {
                     btnSaveProfile.setEnabled(true);
                     Toast.makeText(this, "Đã lưu thông tin công ty!", Toast.LENGTH_SHORT).show();
+                    finish();
                 })
                 .addOnFailureListener(e -> {
                     btnSaveProfile.setEnabled(true);
                     Toast.makeText(this, "Lỗi lưu: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 });
-    }
-
-    private void logout() {
-        auth.signOut();
-        Toast.makeText(this, "Đã đăng xuất", Toast.LENGTH_SHORT).show();
-
-        Intent intent = new Intent(this, LoginActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivity(intent);
     }
 }

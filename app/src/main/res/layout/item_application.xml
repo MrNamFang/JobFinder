@@ -3,48 +3,47 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="16dp"
-    android:background="@android:color/white"
-    android:layout_marginBottom="8dp"
-    android:elevation="2dp">
+    android:padding="18dp"
+    android:layout_marginBottom="12dp"
+    android:background="@drawable/bg_card">
 
     <TextView
         android:id="@+id/tvAppJobTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Job Title"
-        android:textSize="17sp"
+        android:textColor="@color/jf_ink"
+        android:textSize="18sp"
         android:textStyle="bold" />
 
     <TextView
         android:id="@+id/tvAppCompanyName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
         android:text="Company Name"
-        android:textSize="14sp"
-        android:textColor="#666666"
-        android:layout_marginTop="4dp" />
+        android:textColor="@color/jf_body"
+        android:textSize="14sp" />
 
     <TextView
         android:id="@+id/tvAppDate"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
         android:text="Ngày ứng tuyển"
-        android:textSize="12sp"
-        android:textColor="#999999"
-        android:layout_marginTop="6dp" />
+        android:textColor="@color/jf_muted"
+        android:textSize="12sp" />
 
     <TextView
         android:id="@+id/tvAppStatus"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:background="@drawable/bg_tag"
+        android:paddingHorizontal="14dp"
+        android:paddingVertical="6dp"
         android:text="Đang chờ"
+        android:textColor="@color/jf_ink"
         android:textSize="13sp"
-        android:textStyle="bold"
-        android:textColor="#FF9800"
-        android:background="#FFF3E0"
-        android:paddingHorizontal="12dp"
-        android:paddingVertical="4dp"
-        android:layout_marginTop="8dp" />
-
+        android:textStyle="bold" />
 </LinearLayout>

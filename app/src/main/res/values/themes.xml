@@ -1,9 +1,11 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
     <style name="Base.Theme.JobFinder" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
     </style>
 
     <style name="Theme.JobFinder" parent="Base.Theme.JobFinder" />
+
+    <style name="JfSpinner" parent="Widget.AppCompat.Spinner">
+        <item name="android:popupBackground">@drawable/bg_spinner_popup</item>
+        <item name="android:dropDownVerticalOffset">48dp</item>
+    </style>
 </resources>

@@ -7,17 +7,17 @@ import java.io.Serializable;
 @IgnoreExtraProperties
 public class Job implements Serializable {
     private String id;
-    private String employerId;   // uid nhà tuyển dụng đã đăng tin
+    private String employerId;
     private String title;
     private String companyName;
     private String location;
     private String salary;
-    private String jobType; // "Full-time", "Part-time", "Remote"...
+    private String jobType;
     private String description;
     private String requirements;
+    private String status;
     private long postedDate;
 
-    // Firestore bắt buộc phải có constructor rỗng
     public Job() {
     }
 
@@ -66,8 +66,6 @@ public class Job implements Serializable {
         this.companyName = companyName;
     }
 
-    // Tin do nhà tuyển dụng đăng lưu field "company" thay vì "companyName".
-    // Chỉ có setter (không có getter) để Firestore đọc được mà không ghi thêm field thừa.
     public void setCompany(String company) {
         if (this.companyName == null) {
             this.companyName = company;
@@ -112,6 +110,18 @@ public class Job implements Serializable {
 
     public void setRequirements(String requirements) {
         this.requirements = requirements;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public boolean isClosed() {
+        return "Closed".equals(status);
     }
 
     public long getPostedDate() {

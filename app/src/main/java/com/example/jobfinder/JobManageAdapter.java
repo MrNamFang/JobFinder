@@ -1,6 +1,5 @@
 package com.example.jobfinder;
 
-import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -48,6 +47,10 @@ public class JobManageAdapter extends RecyclerView.Adapter<JobManageAdapter.JobV
     public void onBindViewHolder(@NonNull JobViewHolder holder, int position) {
         Job job = jobList.get(position);
 
+        // Xen kẽ màu thẻ: xanh ngọc, cam, trắng (giống Trang chủ)
+        int[] cardBgs = {R.drawable.bg_card_mint, R.drawable.bg_card_peach, R.drawable.bg_card};
+        holder.itemView.setBackgroundResource(cardBgs[position % 3]);
+
         holder.tvTitle.setText(job.getTitle());
         holder.tvCompany.setText(job.getCompany());
         holder.tvLocation.setText(job.getLocation());
@@ -56,9 +59,11 @@ public class JobManageAdapter extends RecyclerView.Adapter<JobManageAdapter.JobV
 
         // Chip trạng thái: chữ + màu nền đổi theo Open/Closed
         holder.tvStatus.setText(isOpen ? "Đang tuyển" : "Đã đóng");
+        holder.tvStatus.setTextColor(isOpen ? 0xFF0F766E : 0xFF7A5A48);
+
         GradientDrawable chip = new GradientDrawable();
-        chip.setCornerRadius(20f);
-        chip.setColor(isOpen ? Color.parseColor("#2E7D32") : Color.parseColor("#757575"));
+        chip.setCornerRadius(12f * holder.itemView.getResources().getDisplayMetrics().density);
+        chip.setColor(isOpen ? 0xFFFFFFFF : 0xFFEADFD6);
         holder.tvStatus.setBackground(chip);
 
         // Nút toggle: chữ đổi theo trạng thái NGƯỢC LẠI với hiện tại, vì nó

@@ -1,5 +1,7 @@
 package com.example.jobfinder.model;
 
+import com.google.firebase.firestore.PropertyName;
+
 import java.io.Serializable;
 
 public class Application implements Serializable {
@@ -127,26 +129,34 @@ public class Application implements Serializable {
         this.userId = userId;
     }
 
+    // Lưu lên Firestore với tên "fullName" / "email" / "phone" cho khớp phía nhà tuyển dụng
+
+    @PropertyName("fullName")
     public String getApplicantName() {
         return applicantName;
     }
 
+    @PropertyName("fullName")
     public void setApplicantName(String applicantName) {
         this.applicantName = applicantName;
     }
 
+    @PropertyName("email")
     public String getApplicantEmail() {
         return applicantEmail;
     }
 
+    @PropertyName("email")
     public void setApplicantEmail(String applicantEmail) {
         this.applicantEmail = applicantEmail;
     }
 
+    @PropertyName("phone")
     public String getApplicantPhone() {
         return applicantPhone;
     }
 
+    @PropertyName("phone")
     public void setApplicantPhone(String applicantPhone) {
         this.applicantPhone = applicantPhone;
     }

@@ -2,9 +2,16 @@ package com.example.jobfinder.fragment;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -16,11 +23,6 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Button;
-
 import com.example.jobfinder.R;
 import com.example.jobfinder.activity.JobDetailActivity;
 import com.example.jobfinder.adapter.JobAdapter;
@@ -29,19 +31,24 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class SearchFragment extends Fragment {
+
+    private static final String ALL_LOCATIONS = "Tất cả địa điểm";
+    private static final String ALL_TYPES = "Tất cả loại hình";
+    private static final String ALL_SALARIES = "Tất cả mức lương";
 
     private EditText etSearchKeyword;
     private Button btnSearch;
     private Spinner spinnerLocation, spinnerJobType, spinnerSalary;
     private RecyclerView recyclerViewSearchResult;
-    private TextView tvSearchEmpty;
+    private TextView tvSearchEmpty, tvSearchCount;
 
     private JobAdapter jobAdapter;
-    private List<Job> allJobs = new ArrayList<>(); // toàn bộ job tải từ Firestore
-    private List<Job> filteredJobs = new ArrayList<>(); // job sau khi lọc
+    private final List<Job> allJobs = new ArrayList<>();
+    private final List<Job> filteredJobs = new ArrayList<>();
 
     private FirebaseFirestore db;
 
@@ -68,6 +75,7 @@ public class SearchFragment extends Fragment {
         spinnerSalary = view.findViewById(R.id.spinnerSalary);
         recyclerViewSearchResult = view.findViewById(R.id.recyclerViewSearchResult);
         tvSearchEmpty = view.findViewById(R.id.tvSearchEmpty);
+        tvSearchCount = view.findViewById(R.id.tvSearchCount);
 
         recyclerViewSearchResult.setLayoutManager(new LinearLayoutManager(getContext()));
         jobAdapter = new JobAdapter(filteredJobs, job -> {
@@ -78,11 +86,9 @@ public class SearchFragment extends Fragment {
         recyclerViewSearchResult.setAdapter(jobAdapter);
 
         setupSpinners();
-        loadAllJobs();
 
         btnSearch.setOnClickListener(v -> applyFilters());
 
-        // Cho phép bấm nút "Tìm kiếm" trên bàn phím ảo
         etSearchKeyword.setOnEditorActionListener((v, actionId, event) -> {
             if (actionId == EditorInfo.IME_ACTION_SEARCH ||
                     (event != null && event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) {
@@ -91,34 +97,85 @@ public class SearchFragment extends Fragment {
             }
             return false;
         });
+
+        etSearchKeyword.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                applyFilters();
+            }
+        });
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        loadAllJobs();
     }
 
     private void setupSpinners() {
-        String[] locations = {"Tất cả địa điểm", "TP. Hồ Chí Minh", "Hà Nội", "Đà Nẵng"};
-        String[] jobTypes = {"Tất cả loại hình", "Full-time", "Part-time"};
-        String[] salaryRanges = {"Tất cả mức lương", "Dưới 10 triệu", "10-20 triệu", "Trên 20 triệu"};
+        String[] locations = {ALL_LOCATIONS, "TP. Hồ Chí Minh", "Hà Nội", "Đà Nẵng"};
+        String[] jobTypes = {ALL_TYPES, "Full-time", "Part-time", "Internship", "Remote"};
+        String[] salaryRanges = {ALL_SALARIES, "Dưới 10 triệu", "10-20 triệu", "Trên 20 triệu"};
 
-        spinnerLocation.setAdapter(new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_dropdown_item, locations));
-        spinnerJobType.setAdapter(new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_dropdown_item, jobTypes));
-        spinnerSalary.setAdapter(new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_dropdown_item, salaryRanges));
+        bindSpinner(spinnerLocation, locations);
+        bindSpinner(spinnerJobType, jobTypes);
+        bindSpinner(spinnerSalary, salaryRanges);
+
+        AdapterView.OnItemSelectedListener listener = new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                applyFilters();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        };
+        spinnerLocation.setOnItemSelectedListener(listener);
+        spinnerJobType.setOnItemSelectedListener(listener);
+        spinnerSalary.setOnItemSelectedListener(listener);
+    }
+
+    private void bindSpinner(Spinner spinner, String[] items) {
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(requireContext(), R.layout.item_spinner, items);
+        adapter.setDropDownViewResource(R.layout.item_spinner_dropdown);
+        spinner.setAdapter(adapter);
     }
 
     private void loadAllJobs() {
         db.collection("jobs")
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
+                    if (!isAdded()) return;
+
                     allJobs.clear();
                     for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
                         Job job = doc.toObject(Job.class);
                         job.setId(doc.getId());
-                        allJobs.add(job);
+                        if (!job.isClosed()) {
+                            allJobs.add(job);
+                        }
                     }
+                    Collections.sort(allJobs, (a, b) -> Long.compare(b.getPostedDate(), a.getPostedDate()));
+                    applyFilters();
                 })
-                .addOnFailureListener(e ->
-                        Toast.makeText(getContext(), "Lỗi tải dữ liệu: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+                .addOnFailureListener(e -> {
+                    if (!isAdded()) return;
+                    Toast.makeText(getContext(), "Lỗi tải dữ liệu: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                });
     }
 
     private void applyFilters() {
+        if (!isAdded() || spinnerLocation.getSelectedItem() == null) return;
+
         String keyword = etSearchKeyword.getText().toString().trim().toLowerCase();
         String selectedLocation = spinnerLocation.getSelectedItem().toString();
         String selectedJobType = spinnerJobType.getSelectedItem().toString();
@@ -131,31 +188,47 @@ public class SearchFragment extends Fragment {
                     || (job.getTitle() != null && job.getTitle().toLowerCase().contains(keyword))
                     || (job.getCompanyName() != null && job.getCompanyName().toLowerCase().contains(keyword));
 
-            boolean matchLocation = selectedLocation.equals("Tất cả địa điểm")
-                    || (job.getLocation() != null && job.getLocation().contains(selectedLocation));
+            boolean matchJobType = selectedJobType.equals(ALL_TYPES)
+                    || (job.getJobType() != null && job.getJobType().equalsIgnoreCase(selectedJobType));
 
-            boolean matchJobType = selectedJobType.equals("Tất cả loại hình")
-                    || (job.getJobType() != null && job.getJobType().equals(selectedJobType));
-
-            boolean matchSalary = matchSalaryRange(job.getSalary(), selectedSalary);
-
-            if (matchKeyword && matchLocation && matchJobType && matchSalary) {
+            if (matchKeyword
+                    && matchLocation(job.getLocation(), selectedLocation)
+                    && matchJobType
+                    && matchSalaryRange(job.getSalary(), selectedSalary)) {
                 filteredJobs.add(job);
             }
         }
 
         jobAdapter.updateData(filteredJobs);
+        tvSearchCount.setText(filteredJobs.size() + " việc làm");
         tvSearchEmpty.setVisibility(filteredJobs.isEmpty() ? View.VISIBLE : View.GONE);
     }
 
-    // Lọc lương đơn giản dựa vào chữ số đầu tiên tìm thấy trong chuỗi salary (vd: "15-20 triệu" -> 15)
+    private boolean matchLocation(String jobLocation, String selected) {
+        if (selected.equals(ALL_LOCATIONS)) return true;
+        if (jobLocation == null) return false;
+
+        String loc = jobLocation.toLowerCase();
+        switch (selected) {
+            case "TP. Hồ Chí Minh":
+                return loc.contains("hồ chí minh") || loc.contains("ho chi minh")
+                        || loc.contains("hcm") || loc.contains("sài gòn") || loc.contains("sai gon");
+            case "Hà Nội":
+                return loc.contains("hà nội") || loc.contains("ha noi") || loc.contains("hn");
+            case "Đà Nẵng":
+                return loc.contains("đà nẵng") || loc.contains("da nang");
+            default:
+                return loc.contains(selected.toLowerCase());
+        }
+    }
+
     private boolean matchSalaryRange(String salaryText, String selectedRange) {
-        if (selectedRange.equals("Tất cả mức lương") || salaryText == null) {
+        if (selectedRange.equals(ALL_SALARIES) || salaryText == null) {
             return true;
         }
 
         int salaryNumber = extractFirstNumber(salaryText);
-        if (salaryNumber == -1) return true; // không parse được thì không loại bỏ
+        if (salaryNumber == -1) return true;
 
         switch (selectedRange) {
             case "Dưới 10 triệu":
@@ -175,7 +248,7 @@ public class SearchFragment extends Fragment {
             if (Character.isDigit(c)) {
                 sb.append(c);
             } else if (sb.length() > 0) {
-                break; // gặp ký tự không phải số sau khi đã có số -> dừng
+                break;
             }
         }
         if (sb.length() == 0) return -1;

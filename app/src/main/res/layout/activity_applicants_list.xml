@@ -4,15 +4,32 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="#FAFAFA">
+    android:fitsSystemWindows="true"
+    android:background="@color/jf_cream">
 
-    <TextView
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Ứng viên đã nộp đơn"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        android:padding="16dp" />
+        android:orientation="vertical"
+        android:padding="20dp"
+        android:background="@drawable/bg_header">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Ứng viên đã nộp đơn"
+            android:textColor="@color/jf_mint_ink"
+            android:textSize="24sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="Bấm vào một ứng viên để xem hồ sơ và duyệt"
+            android:textColor="#1F5A53"
+            android:textSize="13sp" />
+    </LinearLayout>
 
     <ProgressBar
         android:id="@+id/progressBarApplicants"
@@ -25,10 +42,11 @@
         android:id="@+id/tvEmptyApplicants"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:padding="32dp"
+        android:gravity="center"
         android:text="Chưa có ứng viên nào"
-        android:textAlignment="center"
-        android:padding="24dp"
-        android:textColor="#999999"
+        android:textColor="@color/jf_muted"
+        android:textSize="15sp"
         android:visibility="gone" />
 
     <androidx.recyclerview.widget.RecyclerView
@@ -37,12 +55,21 @@
         android:layout_height="0dp"
         android:layout_weight="1"
         android:clipToPadding="false"
+        android:paddingHorizontal="20dp"
+        android:paddingTop="16dp"
         android:paddingBottom="8dp" />
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavEmployer"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:menu="@menu/bottom_nav_menu_employer" />
+        android:layout_height="64dp"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginBottom="12dp"
+        android:background="@drawable/bg_nav_pill"
+        app:menu="@menu/bottom_nav_menu_employer"
+        app:itemIconTint="@color/nav_item"
+        app:itemTextColor="@color/nav_item"
+        app:itemActiveIndicatorStyle="@null"
+        app:labelVisibilityMode="unlabeled" />
 
 </LinearLayout>

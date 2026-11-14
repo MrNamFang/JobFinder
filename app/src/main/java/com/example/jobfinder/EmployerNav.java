@@ -22,7 +22,7 @@ public class EmployerNav {
             } else if (id == R.id.nav_applicants) {
                 target = ApplicantsListActivity.class;
             } else if (id == R.id.nav_profile) {
-                target = EmployerProfileActivity.class;
+                target = EmployerAccountActivity.class;
             } else {
                 return false;
             }

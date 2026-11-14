@@ -1,83 +1,106 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:fitsSystemWindows="true"
-    android:background="#F5F5F5">
+    android:background="@color/jf_cream">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center_vertical"
-        android:padding="12dp">
+        android:padding="20dp"
+        android:background="@drawable/bg_header">
 
         <ImageButton
             android:id="@+id/btnBack"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:src="@android:drawable/ic_menu_close_clear_cancel"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="Quay lại" />
+            android:layout_width="46dp"
+            android:layout_height="46dp"
+            android:background="@drawable/bg_chip"
+            android:contentDescription="Quay lại"
+            android:src="@drawable/baseline_arrow_back_24"
+            app:tint="@color/jf_mint_ink" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Gửi phản hồi / khiếu nại"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            android:layout_marginStart="8dp" />
-
+            android:layout_marginStart="14dp"
+            android:text="Góp ý và khiếu nại"
+            android:textColor="@color/jf_mint_ink"
+            android:textSize="24sp"
+            android:textStyle="bold" />
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginTop="16dp"
         android:orientation="vertical"
-        android:background="@android:color/white"
-        android:padding="16dp">
+        android:padding="18dp"
+        android:background="@drawable/bg_card">
 
         <EditText
             android:id="@+id/etFeedbackContent"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="@drawable/bg_input"
+            android:gravity="top"
             android:hint="Nhập nội dung phản hồi hoặc khiếu nại của bạn..."
             android:minLines="4"
-            android:gravity="top"
-            android:background="@android:drawable/edit_text" />
+            android:padding="14dp"
+            android:textColor="@color/jf_ink"
+            android:textColorHint="#A58A78"
+            android:textSize="15sp" />
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btnSubmitFeedback"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="56dp"
+            android:layout_marginTop="14dp"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
             android:text="Gửi phản hồi"
-            android:layout_marginTop="12dp" />
-
+            android:textAllCaps="false"
+            android:textColor="@color/jf_white"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:backgroundTint="@color/jf_teal"
+            app:cornerRadius="28dp" />
     </LinearLayout>
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:paddingHorizontal="20dp"
+        android:paddingTop="20dp"
+        android:paddingBottom="8dp"
         android:text="Lịch sử phản hồi đã gửi"
-        android:textSize="16sp"
-        android:textStyle="bold"
-        android:padding="16dp" />
+        android:textColor="@color/jf_ink"
+        android:textSize="18sp"
+        android:textStyle="bold" />
 
     <TextView
         android:id="@+id/tvEmptyFeedback"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:padding="24dp"
+        android:gravity="center"
         android:text="Bạn chưa gửi phản hồi nào"
-        android:textAlignment="center"
-        android:textColor="#999999"
-        android:padding="20dp"
+        android:textColor="@color/jf_muted"
+        android:textSize="15sp"
         android:visibility="gone" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerViewFeedback"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:paddingHorizontal="12dp" />
-
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:clipToPadding="false"
+        android:paddingHorizontal="20dp"
+        android:paddingTop="4dp"
+        android:paddingBottom="16dp" />
 </LinearLayout>

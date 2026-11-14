@@ -1,6 +1,5 @@
 package com.example.jobfinder;
 
-import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -38,19 +37,26 @@ public class ApplicantAdapter extends RecyclerView.Adapter<ApplicantAdapter.Appl
     public void onBindViewHolder(@NonNull ApplicantViewHolder holder, int position) {
         JobApplication app = applicantList.get(position);
 
-        holder.tvName.setText(app.getFullName());
+        // Xen kẽ màu thẻ: xanh ngọc, cam, trắng (giống Trang chủ)
+        int[] cardBgs = {R.drawable.bg_card_mint, R.drawable.bg_card_peach, R.drawable.bg_card};
+        holder.itemView.setBackgroundResource(cardBgs[position % 3]);
+
+        String name = app.getFullName();
+        holder.tvName.setText(name);
+        holder.tvInitial.setText(name == null || name.trim().isEmpty()
+                ? "?" : name.trim().substring(0, 1).toUpperCase());
         holder.tvJobTitle.setText("Ứng tuyển: " + app.getJobTitle());
         holder.tvEmail.setText(app.getEmail());
-        holder.tvStatus.setText(statusLabel(app.getStatus()));
 
-        // Tạo 1 "chip" bo tròn với màu nền thay đổi tùy theo trạng thái --
-        // GradientDrawable ở đây không phải để tạo gradient (dù tên vậy),
-        // mà dùng để vẽ 1 hình chữ nhật bo góc với màu nền tùy chỉnh, thay
-        // vì phải tạo sẵn nhiều file .xml drawable riêng cho từng màu.
-        GradientDrawable chipBackground = new GradientDrawable();
-        chipBackground.setCornerRadius(20f);
-        chipBackground.setColor(statusColor(app.getStatus()));
-        holder.tvStatus.setBackground(chipBackground);
+        String status = normalize(app.getStatus());
+        holder.tvStatus.setText(statusLabel(status));
+        holder.tvStatus.setTextColor(statusTextColor(status));
+
+        // Chip bo tròn, màu nền đổi theo trạng thái
+        GradientDrawable chip = new GradientDrawable();
+        chip.setCornerRadius(12f * holder.itemView.getResources().getDisplayMetrics().density);
+        chip.setColor(statusBgColor(status));
+        holder.tvStatus.setBackground(chip);
 
         holder.itemView.setOnClickListener(v -> listener.onApplicantClick(app));
     }
@@ -70,8 +76,26 @@ public class ApplicantAdapter extends RecyclerView.Adapter<ApplicantAdapter.Appl
         }
     }
 
-    private String statusLabel(String status) {
+    // Đưa mọi giá trị (kể cả tiếng Việt lưu cũ) về 4 trạng thái chuẩn
+    private String normalize(String status) {
         if (status == null) return "Pending";
+        switch (status) {
+            case "Reviewed":
+            case "Đã xem":
+                return "Reviewed";
+            case "Accepted":
+            case "Được duyệt":
+            case "Chấp nhận":
+                return "Accepted";
+            case "Rejected":
+            case "Từ chối":
+                return "Rejected";
+            default:
+                return "Pending";
+        }
+    }
+
+    private String statusLabel(String status) {
         switch (status) {
             case "Reviewed": return "Đã xem";
             case "Accepted": return "Chấp nhận";
@@ -80,18 +104,26 @@ public class ApplicantAdapter extends RecyclerView.Adapter<ApplicantAdapter.Appl
         }
     }
 
-    private int statusColor(String status) {
-        if (status == null) return Color.parseColor("#F57C00"); // cam - Pending
+    private int statusBgColor(String status) {
         switch (status) {
-            case "Reviewed": return Color.parseColor("#1565C0");  // xanh dương
-            case "Accepted": return Color.parseColor("#2E7D32");  // xanh lá
-            case "Rejected": return Color.parseColor("#C62828");  // đỏ
-            default: return Color.parseColor("#F57C00");          // cam
+            case "Reviewed": return 0xFFFFFFFF; // trắng, nổi trên nền thẻ màu
+            case "Accepted": return 0xFFCDEFD6; // xanh lá nhạt
+            case "Rejected": return 0xFFFFDAD6; // đỏ nhạt
+            default: return 0xFFFFFFFF;         // trắng
+        }
+    }
+
+    private int statusTextColor(String status) {
+        switch (status) {
+            case "Reviewed": return 0xFF0F766E;
+            case "Accepted": return 0xFF166534;
+            case "Rejected": return 0xFFC62828;
+            default: return 0xFF9A4A00;
         }
     }
 
     static class ApplicantViewHolder extends RecyclerView.ViewHolder {
-        TextView tvName, tvJobTitle, tvEmail, tvStatus;
+        TextView tvName, tvJobTitle, tvEmail, tvStatus, tvInitial;
 
         ApplicantViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -99,6 +131,7 @@ public class ApplicantAdapter extends RecyclerView.Adapter<ApplicantAdapter.Appl
             tvJobTitle = itemView.findViewById(R.id.tvApplicantJobTitle);
             tvEmail = itemView.findViewById(R.id.tvApplicantEmail);
             tvStatus = itemView.findViewById(R.id.tvApplicantStatus);
+            tvInitial = itemView.findViewById(R.id.tvApplicantInitial);
         }
     }
 }

@@ -3,6 +3,7 @@ package com.example.jobfinder.activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Patterns;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -21,7 +22,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private EditText etEmail, etPassword;
     private Button btnLogin;
-    private TextView tvGoToRegister;
+    private TextView tvGoToRegister, tvForgotPassword;
 
     private FirebaseAuth mAuth;
 
@@ -36,8 +37,11 @@ public class LoginActivity extends AppCompatActivity {
         etPassword = findViewById(R.id.etPassword);
         btnLogin = findViewById(R.id.btnLogin);
         tvGoToRegister = findViewById(R.id.tvGoToRegister);
+        tvForgotPassword = findViewById(R.id.tvForgotPassword);
 
         btnLogin.setOnClickListener(v -> loginUser());
+
+        tvForgotPassword.setOnClickListener(v -> resetPassword());
 
         tvGoToRegister.setOnClickListener(v -> {
             startActivity(new Intent(LoginActivity.this, RegisterActivity.class));
@@ -77,6 +81,25 @@ public class LoginActivity extends AppCompatActivity {
                     btnLogin.setEnabled(true);
                     Toast.makeText(this, "Đăng nhập thất bại: " + e.getMessage(), Toast.LENGTH_LONG).show();
                 });
+    }
+
+    // Gửi email đặt lại mật khẩu qua Firebase
+    private void resetPassword() {
+        String email = etEmail.getText().toString().trim();
+
+        if (TextUtils.isEmpty(email) || !Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            etEmail.setError("Nhập email hợp lệ để nhận link đặt lại mật khẩu");
+            etEmail.requestFocus();
+            return;
+        }
+
+        mAuth.sendPasswordResetEmail(email)
+                .addOnSuccessListener(unused ->
+                        Toast.makeText(this,
+                                "Đã gửi link đặt lại mật khẩu tới " + email + ". Kiểm tra cả mục Spam nhé.",
+                                Toast.LENGTH_LONG).show())
+                .addOnFailureListener(e ->
+                        Toast.makeText(this, "Không gửi được: " + e.getMessage(), Toast.LENGTH_LONG).show());
     }
 
     // Đọc role trong Firestore rồi chuyển đến màn hình tương ứng

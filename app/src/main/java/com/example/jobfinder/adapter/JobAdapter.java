@@ -1,5 +1,7 @@
 package com.example.jobfinder.adapter;
 
+import android.text.TextUtils;
+import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -45,6 +47,23 @@ public class JobAdapter extends RecyclerView.Adapter<JobAdapter.JobViewHolder> {
         holder.tvJobType.setText(job.getJobType());
         holder.tvSalary.setText(job.getSalary());
 
+        // Chữ cái đầu của tên công ty làm ảnh đại diện
+        String company = job.getCompanyName();
+        holder.tvCompanyInitial.setText(
+                TextUtils.isEmpty(company) ? "?" : company.trim().substring(0, 1).toUpperCase());
+
+        // Thời gian đăng, ví dụ "2 ngày trước"
+        if (job.getPostedDate() > 0) {
+            holder.tvPosted.setText(DateUtils.getRelativeTimeSpanString(
+                    job.getPostedDate(), System.currentTimeMillis(), DateUtils.MINUTE_IN_MILLIS));
+        } else {
+            holder.tvPosted.setText("");
+        }
+
+        // Xen kẽ màu thẻ: xanh ngọc, cam, trắng
+        int[] cardBgs = {R.drawable.bg_card_mint, R.drawable.bg_card_peach, R.drawable.bg_card};
+        holder.itemView.setBackgroundResource(cardBgs[position % 3]);
+
         holder.itemView.setOnClickListener(v -> {
             if (listener != null) {
                 listener.onJobClick(job);
@@ -63,7 +82,8 @@ public class JobAdapter extends RecyclerView.Adapter<JobAdapter.JobViewHolder> {
     }
 
     static class JobViewHolder extends RecyclerView.ViewHolder {
-        TextView tvJobTitle, tvCompanyName, tvLocation, tvJobType, tvSalary;
+        TextView tvJobTitle, tvCompanyName, tvLocation, tvJobType, tvSalary,
+                tvCompanyInitial, tvPosted;
 
         public JobViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -72,6 +92,8 @@ public class JobAdapter extends RecyclerView.Adapter<JobAdapter.JobViewHolder> {
             tvLocation = itemView.findViewById(R.id.tvLocation);
             tvJobType = itemView.findViewById(R.id.tvJobType);
             tvSalary = itemView.findViewById(R.id.tvSalary);
+            tvCompanyInitial = itemView.findViewById(R.id.tvCompanyInitial);
+            tvPosted = itemView.findViewById(R.id.tvPosted);
         }
     }
 }

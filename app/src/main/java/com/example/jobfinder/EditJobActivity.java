@@ -30,7 +30,7 @@ public class EditJobActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_job);
-
+        findViewById(R.id.btnBack).setOnClickListener(v -> finish());
         db = FirebaseFirestore.getInstance();
 
         etTitle = findViewById(R.id.etEditJobTitle);
