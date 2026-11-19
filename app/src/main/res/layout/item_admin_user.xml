@@ -1,55 +1,63 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="10dp"
-    android:background="#FFFFFF"
+    android:layout_marginBottom="12dp"
+    android:background="@drawable/bg_card"
     android:orientation="vertical"
-    android:padding="16dp">
+    android:padding="18dp">
 
     <TextView
         android:id="@+id/tvUserName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="0dp"
         android:text="Tên người dùng"
-        android:textColor="#222222"
-        android:textSize="18sp"
+        android:textColor="@color/jf_ink"
+        android:textSize="17sp"
         android:textStyle="bold" />
 
     <TextView
         android:id="@+id/tvUserEmail"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
+        android:layout_marginTop="4dp"
         android:text="email@gmail.com"
-        android:textColor="#666666"
+        android:textColor="@color/jf_muted"
         android:textSize="14sp" />
 
     <TextView
         android:id="@+id/tvUserRole"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
-        android:text="Ứng viên"
-        android:textColor="#555555"
+        android:layout_marginTop="4dp"
+        android:text="Vai trò"
+        android:textColor="#4A3426"
         android:textSize="14sp" />
 
     <TextView
         android:id="@+id/tvUserStatus"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
+        android:layout_marginTop="4dp"
         android:text="Trạng thái: Hoạt động"
         android:textColor="#2E7D32"
-        android:textSize="14sp" />
+        android:textSize="14sp"
+        android:textStyle="bold" />
 
     <Button
         android:id="@+id/btnBlock"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:text="Khóa tài khoản" />
-
+        android:layout_height="48dp"
+        android:layout_marginTop="14dp"
+        android:insetTop="0dp"
+        android:insetBottom="0dp"
+        android:text="Khóa tài khoản"
+        android:textAllCaps="false"
+        android:textColor="@color/jf_white"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        app:backgroundTint="#C9776B"
+        app:cornerRadius="28dp" />
 </LinearLayout>

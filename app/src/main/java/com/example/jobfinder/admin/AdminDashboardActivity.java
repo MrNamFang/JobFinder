@@ -10,6 +10,8 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.jobfinder.R;
+import com.example.jobfinder.activity.LoginActivity;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 public class AdminDashboardActivity extends AppCompatActivity {
@@ -76,8 +78,12 @@ public class AdminDashboardActivity extends AppCompatActivity {
 
         if (btnLogoutAdmin != null) {
             btnLogoutAdmin.setOnClickListener(v -> {
+                FirebaseAuth.getInstance().signOut();
                 Toast.makeText(this, "Đã đăng xuất tài khoản Admin!", Toast.LENGTH_SHORT).show();
-                finish();
+
+                Intent intent = new Intent(this, LoginActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(intent);
             });
         }
     }
@@ -129,7 +135,7 @@ public class AdminDashboardActivity extends AppCompatActivity {
 
     private void loadTotalRecruiters() {
         db.collection("users")
-                .whereEqualTo("role", "recruiter")
+                .whereEqualTo("role", "employer")
                 .get()
                 .addOnSuccessListener(result -> {
                     if (tvTotalRecruiters != null) {

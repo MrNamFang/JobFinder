@@ -61,13 +61,13 @@ public class AdminJobAdapter
 
         String status = job.getStatus();
         if ("approved".equalsIgnoreCase(status)) {
-            holder.tvJobStatus.setText("Trạng thái: Đã duyệt (Xanh)");
+            holder.tvJobStatus.setText("Trạng thái: Đã duyệt");
             holder.tvJobStatus.setTextColor(Color.parseColor("#2E7D32"));
         } else if ("rejected".equalsIgnoreCase(status)) {
-            holder.tvJobStatus.setText("Trạng thái: Bị từ chối (Đỏ)");
-            holder.tvJobStatus.setTextColor(Color.parseColor("#C62828"));
+            holder.tvJobStatus.setText("Trạng thái: Bị từ chối");
+            holder.tvJobStatus.setTextColor(Color.parseColor("#B3261E"));
         } else {
-            holder.tvJobStatus.setText("Trạng thái: Chờ duyệt (Vàng)");
+            holder.tvJobStatus.setText("Trạng thái: Chờ duyệt");
             holder.tvJobStatus.setTextColor(Color.parseColor("#E65100"));
         }
 

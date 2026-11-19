@@ -14,6 +14,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.jobfinder.EmployerMainActivity;
 import com.example.jobfinder.MainActivity;
 import com.example.jobfinder.R;
+import com.example.jobfinder.admin.AdminDashboardActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -115,9 +116,9 @@ public class LoginActivity extends AppCompatActivity {
                     String role = doc.getString("role");
                     Intent intent;
 
-                    // TODO: khi ghép code admin, thêm nhánh:
-                    // if ("admin".equals(role)) intent = new Intent(this, com.example.jobfinder.admin.AdminDashboardActivity.class);
-                    if ("employer".equals(role)) {
+                    if ("admin".equals(role)) {
+                        intent = new Intent(this, AdminDashboardActivity.class);
+                    } else if ("employer".equals(role)) {
                         intent = new Intent(this, EmployerMainActivity.class);
                     } else {
                         intent = new Intent(this, MainActivity.class);

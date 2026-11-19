@@ -59,15 +59,15 @@ public class AdminReportAdapter
         boolean isResolved = "resolved".equalsIgnoreCase(status) || "Đã xử lý".equalsIgnoreCase(status);
 
         if (isResolved) {
-            holder.tvReportStatus.setText("Trạng thái: Đã giải quyết xong (Xanh)");
+            holder.tvReportStatus.setText("Trạng thái: Đã giải quyết xong");
             holder.tvReportStatus.setTextColor(Color.parseColor("#2E7D32"));
             holder.btnResolveReport.setText("Mở lại báo cáo");
-            holder.btnResolveReport.setBackgroundColor(Color.parseColor("#FF9800"));
+            holder.btnResolveReport.setBackgroundColor(Color.parseColor("#C26A00"));
         } else {
-            holder.tvReportStatus.setText("Trạng thái: Đang chờ xử lý (Cam)");
+            holder.tvReportStatus.setText("Trạng thái: Đang chờ xử lý");
             holder.tvReportStatus.setTextColor(Color.parseColor("#E65100"));
             holder.btnResolveReport.setText("✓ Duyệt xử lý");
-            holder.btnResolveReport.setBackgroundColor(Color.parseColor("#4CAF50"));
+            holder.btnResolveReport.setBackgroundColor(Color.parseColor("#0F766E"));
         }
 
         // Bấm nút để chuyển đổi trạng thái Duyệt xử lý <-> Mở lại

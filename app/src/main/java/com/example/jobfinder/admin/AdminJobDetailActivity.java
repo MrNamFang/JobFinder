@@ -1,7 +1,5 @@
 package com.example.jobfinder.admin;
 
-import android.content.DialogInterface;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -129,14 +127,14 @@ public class AdminJobDetailActivity extends AppCompatActivity {
 
     private void updateStatusView(String status, String rejectReason) {
         if ("approved".equalsIgnoreCase(status)) {
-            tvStatus.setText("Trạng thái: Đã duyệt (Xanh)");
-            tvStatus.setTextColor(Color.parseColor("#2E7D32"));
-            tvStatus.setBackgroundColor(Color.parseColor("#C8E6C9"));
+            tvStatus.setText("Trạng thái: Đã duyệt");
+            tvStatus.setTextColor(0xFF0B5C55);
+            tvStatus.setBackgroundResource(R.drawable.bg_status_accepted);
             tvRejectReason.setVisibility(View.GONE);
         } else if ("rejected".equalsIgnoreCase(status)) {
-            tvStatus.setText("Trạng thái: Bị từ chối (Đỏ)");
-            tvStatus.setTextColor(Color.parseColor("#C62828"));
-            tvStatus.setBackgroundColor(Color.parseColor("#FFCDD2"));
+            tvStatus.setText("Trạng thái: Bị từ chối");
+            tvStatus.setTextColor(0xFFB3261E);
+            tvStatus.setBackgroundResource(R.drawable.bg_status_rejected);
 
             if (rejectReason != null && !rejectReason.isEmpty()) {
                 tvRejectReason.setVisibility(View.VISIBLE);
@@ -145,9 +143,9 @@ public class AdminJobDetailActivity extends AppCompatActivity {
                 tvRejectReason.setVisibility(View.GONE);
             }
         } else {
-            tvStatus.setText("Trạng thái: Chờ duyệt (Vàng)");
-            tvStatus.setTextColor(Color.parseColor("#E65100"));
-            tvStatus.setBackgroundColor(Color.parseColor("#FFE0B2"));
+            tvStatus.setText("Trạng thái: Chờ duyệt");
+            tvStatus.setTextColor(0xFF9A4B00);
+            tvStatus.setBackgroundResource(R.drawable.bg_status_pending);
             tvRejectReason.setVisibility(View.GONE);
         }
     }

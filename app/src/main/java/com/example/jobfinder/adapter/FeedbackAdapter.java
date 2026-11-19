@@ -40,14 +40,18 @@ public class FeedbackAdapter extends RecyclerView.Adapter<FeedbackAdapter.Feedba
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault());
         holder.tvFeedbackDate.setText("Ngày gửi: " + sdf.format(fb.getCreatedAt()));
 
-        holder.tvFeedbackStatus.setText(fb.getStatus());
+        // Admin ghi "resolved", người dùng gửi lên là "Chưa xử lý" -> nhận cả hai kiểu
+        boolean resolved = "resolved".equalsIgnoreCase(fb.getStatus())
+                || "Đã xử lý".equalsIgnoreCase(fb.getStatus());
 
-        if ("Đã xử lý".equals(fb.getStatus())) {
-            holder.tvFeedbackStatus.setTextColor(0xFF4CAF50);
-            holder.tvFeedbackStatus.setBackgroundColor(0xFFE8F5E9);
+        if (resolved) {
+            holder.tvFeedbackStatus.setText("Đã xử lý");
+            holder.tvFeedbackStatus.setTextColor(0xFF0B5C55);
+            holder.tvFeedbackStatus.setBackgroundResource(R.drawable.bg_status_accepted);
         } else {
-            holder.tvFeedbackStatus.setTextColor(0xFFFF9800);
-            holder.tvFeedbackStatus.setBackgroundColor(0xFFFFF3E0);
+            holder.tvFeedbackStatus.setText("Chưa xử lý");
+            holder.tvFeedbackStatus.setTextColor(0xFF9A4B00);
+            holder.tvFeedbackStatus.setBackgroundResource(R.drawable.bg_status_pending);
         }
 
         if (fb.getAdminReply() != null && !fb.getAdminReply().isEmpty()) {

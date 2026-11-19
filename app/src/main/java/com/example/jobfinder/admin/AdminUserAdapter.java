@@ -54,14 +54,14 @@ public class AdminUserAdapter
 
         if (user.isBlocked()) {
             holder.tvUserStatus.setText("Trạng thái: Đã khóa (Banned)");
-            holder.tvUserStatus.setTextColor(Color.parseColor("#C62828"));
+            holder.tvUserStatus.setTextColor(Color.parseColor("#B3261E"));
             holder.btnBlock.setText("Mở khóa tài khoản");
-            holder.btnBlock.setBackgroundColor(Color.parseColor("#4CAF50"));
+            holder.btnBlock.setBackgroundColor(Color.parseColor("#0F766E"));
         } else {
             holder.tvUserStatus.setText("Trạng thái: Đang hoạt động");
             holder.tvUserStatus.setTextColor(Color.parseColor("#2E7D32"));
             holder.btnBlock.setText("Khóa tài khoản");
-            holder.btnBlock.setBackgroundColor(Color.parseColor("#E53935"));
+            holder.btnBlock.setBackgroundColor(Color.parseColor("#C9776B"));
         }
 
         holder.btnBlock.setOnClickListener(v -> {
