@@ -39,6 +39,9 @@ public class NotificationsActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         currentUid = mAuth.getCurrentUser() != null ? mAuth.getCurrentUser().getUid() : null;
 
+        findViewById(R.id.btnBack).setOnClickListener(v -> finish());
+
+        recyclerViewNotifications = findViewById(R.id.recyclerViewNotifications);
         recyclerViewNotifications = findViewById(R.id.recyclerViewNotifications);
         tvEmptyNotifications = findViewById(R.id.tvEmptyNotifications);
         recyclerViewNotifications.setLayoutManager(new LinearLayoutManager(this));

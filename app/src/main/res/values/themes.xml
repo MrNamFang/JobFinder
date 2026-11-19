@@ -1,9 +1,16 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
     <style name="Base.Theme.JobFinder" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+        <!-- Màu chủ đạo: nút Material mặc định sẽ là teal thay vì tím -->
+        <item name="colorPrimary">@color/jf_teal</item>
+        <item name="colorOnPrimary">@color/jf_white</item>
+        <!-- Hộp thoại xác nhận -->
+        <item name="alertDialogTheme">@style/JobFinderDialog</item>
     </style>
 
     <style name="Theme.JobFinder" parent="Base.Theme.JobFinder" />
+
+    <style name="JfSpinner" parent="Widget.AppCompat.Spinner">
+        <item name="android:popupBackground">@drawable/bg_spinner_popup</item>
+        <item name="android:dropDownVerticalOffset">48dp</item>
+    </style>
 </resources>

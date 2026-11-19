@@ -2,8 +2,10 @@ package com.example.jobfinder.activity;
 
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Patterns;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -18,6 +20,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 public class RegisterActivity extends AppCompatActivity {
 
     private EditText etFullName, etEmail, etPhone, etPassword, etConfirmPassword;
+    private RadioGroup rgRole;
     private Button btnRegister;
     private TextView tvGoToLogin;
 
@@ -38,14 +41,11 @@ public class RegisterActivity extends AppCompatActivity {
         etPhone = findViewById(R.id.etPhone);
         etPassword = findViewById(R.id.etPassword);
         etConfirmPassword = findViewById(R.id.etConfirmPassword);
+        rgRole = findViewById(R.id.rgRole);
         btnRegister = findViewById(R.id.btnRegister);
         tvGoToLogin = findViewById(R.id.tvGoToLogin);
 
-        // Test xem nút có bắt được sự kiện click không
-        btnRegister.setOnClickListener(v -> {
-            Toast.makeText(RegisterActivity.this, "DA BAM NUT", Toast.LENGTH_LONG).show();
-            registerUser();
-        });
+        btnRegister.setOnClickListener(v -> registerUser());
 
         tvGoToLogin.setOnClickListener(v -> {
             // Đóng màn Register, quay lại màn Login
@@ -69,6 +69,10 @@ public class RegisterActivity extends AppCompatActivity {
             etEmail.setError("Vui lòng nhập email");
             return;
         }
+        if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            etEmail.setError("Email không hợp lệ");
+            return;
+        }
         if (TextUtils.isEmpty(password)) {
             etPassword.setError("Vui lòng nhập mật khẩu");
             return;
@@ -82,6 +86,9 @@ public class RegisterActivity extends AppCompatActivity {
             return;
         }
 
+        // Lấy vai trò đã chọn
+        String role = (rgRole.getCheckedRadioButtonId() == R.id.rbEmployer) ? "employer" : "seeker";
+
         btnRegister.setEnabled(false); // tránh bấm nhiều lần
 
         // Tạo tài khoản Firebase Auth
@@ -89,7 +96,7 @@ public class RegisterActivity extends AppCompatActivity {
                 .addOnSuccessListener(authResult -> {
                     FirebaseUser firebaseUser = authResult.getUser();
                     if (firebaseUser != null) {
-                        saveUserToFirestore(firebaseUser.getUid(), fullName, email, phone);
+                        saveUserToFirestore(firebaseUser, fullName, email, phone, role);
                     }
                 })
                 .addOnFailureListener(e -> {
@@ -98,16 +105,19 @@ public class RegisterActivity extends AppCompatActivity {
                 });
     }
 
-    private void saveUserToFirestore(String uid, String fullName, String email, String phone) {
-        User user = new User(uid, fullName, email, phone, "seeker");
+    private void saveUserToFirestore(FirebaseUser firebaseUser, String fullName, String email, String phone, String role) {
+        User user = new User(firebaseUser.getUid(), fullName, email, phone, role);
 
-        db.collection("users").document(uid)
+        db.collection("users").document(firebaseUser.getUid())
                 .set(user)
                 .addOnSuccessListener(unused -> {
                     Toast.makeText(RegisterActivity.this, "Đăng ký thành công!", Toast.LENGTH_SHORT).show();
-                    finish(); // quay lại màn Login
+                    mAuth.signOut(); // đăng xuất để quay lại Login và đăng nhập thủ công
+                    finish();
                 })
                 .addOnFailureListener(e -> {
+                    // Lưu hồ sơ lỗi thì xóa tài khoản vừa tạo để có thể đăng ký lại
+                    firebaseUser.delete();
                     btnRegister.setEnabled(true);
                     Toast.makeText(RegisterActivity.this, "Lỗi lưu dữ liệu: " + e.getMessage(), Toast.LENGTH_LONG).show();
                 });

@@ -1,86 +1,167 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:fitsSystemWindows="true"
-    android:background="#F5F5F5">
+    android:background="@color/jf_cream">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:padding="12dp"
-        android:background="@android:color/white">
+        android:orientation="vertical"
+        android:paddingHorizontal="20dp"
+        android:paddingTop="24dp"
+        android:paddingBottom="24dp"
+        android:background="@drawable/bg_header">
 
-        <EditText
-            android:id="@+id/etSearchKeyword"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:hint="Tìm theo tên công việc, công ty..."
-            android:singleLine="true"
-            android:imeOptions="actionSearch" />
-
-        <Button
-            android:id="@+id/btnSearch"
+        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Tìm" />
+            android:text="Tìm việc"
+            android:textColor="@color/jf_mint_ink"
+            android:textSize="28sp"
+            android:textStyle="bold" />
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:text="Lọc theo công ty, địa điểm, loại hình, mức lương"
+            android:textColor="#1F5A53"
+            android:textSize="13sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingStart="18dp"
+            android:paddingEnd="6dp"
+            android:paddingVertical="6dp"
+            android:background="@drawable/bg_search">
+
+            <EditText
+                android:id="@+id/etSearchKeyword"
+                android:layout_width="0dp"
+                android:layout_height="44dp"
+                android:layout_weight="1"
+                android:background="@null"
+                android:hint="Tên công việc, công ty..."
+                android:imeOptions="actionSearch"
+                android:inputType="text"
+                android:singleLine="true"
+                android:textColor="@color/jf_ink"
+                android:textColorHint="#A58A78"
+                android:textSize="15sp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnSearch"
+                android:layout_width="wrap_content"
+                android:layout_height="44dp"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:paddingHorizontal="22dp"
+                android:text="Tìm"
+                android:textAllCaps="false"
+                android:textColor="@color/jf_white"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                app:backgroundTint="@color/jf_teal"
+                app:cornerRadius="22dp" />
+        </LinearLayout>
     </LinearLayout>
 
     <HorizontalScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@android:color/white"
-        android:paddingBottom="8dp">
+        android:clipToPadding="false"
+        android:paddingHorizontal="20dp"
+        android:paddingTop="16dp"
+        android:scrollbars="none">
 
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:paddingHorizontal="12dp">
+            android:orientation="horizontal">
 
-            <Spinner
-                android:id="@+id/spinnerLocation"
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
-                android:minWidth="120dp" />
+                android:paddingHorizontal="6dp"
+                android:background="@drawable/bg_chip_off">
+                <Spinner
+                    android:id="@+id/spinnerLocation"
+                    style="@style/JfSpinner"
+                    android:layout_width="wrap_content"
+                    android:layout_height="44dp"
+                    android:minWidth="140dp" />
+            </LinearLayout>
 
-            <Spinner
-                android:id="@+id/spinnerJobType"
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
-                android:minWidth="120dp" />
+                android:paddingHorizontal="6dp"
+                android:background="@drawable/bg_chip_off">
+                <Spinner
+                    android:id="@+id/spinnerJobType"
+                    style="@style/JfSpinner"
+                    android:layout_width="wrap_content"
+                    android:layout_height="44dp"
+                    android:minWidth="140dp" />
+            </LinearLayout>
 
-            <Spinner
-                android:id="@+id/spinnerSalary"
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:minWidth="120dp" />
-
+                android:paddingHorizontal="6dp"
+                android:background="@drawable/bg_chip_off">
+                <Spinner
+                    android:id="@+id/spinnerSalary"
+                    style="@style/JfSpinner"
+                    android:layout_width="wrap_content"
+                    android:layout_height="44dp"
+                    android:minWidth="140dp" />
+            </LinearLayout>
         </LinearLayout>
-
     </HorizontalScrollView>
 
     <TextView
-        android:id="@+id/tvSearchEmpty"
+        android:id="@+id/tvSearchCount"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Không tìm thấy công việc phù hợp"
-        android:textAlignment="center"
-        android:textColor="#999999"
-        android:padding="20dp"
-        android:visibility="gone" />
+        android:paddingHorizontal="20dp"
+        android:paddingTop="16dp"
+        android:paddingBottom="8dp"
+        android:textColor="@color/jf_ink"
+        android:textSize="16sp"
+        android:textStyle="bold" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerViewSearchResult"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:paddingHorizontal="12dp"
-        android:paddingTop="8dp" />
+        android:layout_height="0dp"
+        android:layout_weight="1">
 
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerViewSearchResult"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:paddingHorizontal="20dp"
+            android:paddingTop="4dp"
+            android:paddingBottom="16dp" />
+
+        <TextView
+            android:id="@+id/tvSearchEmpty"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="Không tìm thấy công việc phù hợp"
+            android:textColor="@color/jf_muted"
+            android:textSize="15sp"
+            android:visibility="gone" />
+    </FrameLayout>
 </LinearLayout>

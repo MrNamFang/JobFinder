@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Hộp thoại xác nhận (Ứng tuyển, Hủy đơn...) theo màu JobFinder -->
+    <style name="JobFinderDialog" parent="ThemeOverlay.Material3.MaterialAlertDialog">
+        <item name="colorPrimary">@color/jf_teal</item>
+        <item name="colorSurface">@color/jf_cream</item>
+        <item name="colorOnSurface">@color/jf_ink</item>
+        <item name="colorOnSurfaceVariant">@color/jf_muted</item>
+        <item name="android:windowBackground">@drawable/bg_dialog</item>
+    </style>
+
+</resources>

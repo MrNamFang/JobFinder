@@ -1,12 +1,22 @@
 package com.example.jobfinder.model;
 
+import com.google.firebase.firestore.PropertyName;
+
 import java.io.Serializable;
 
 public class Application implements Serializable {
+
+    // Giá trị status lưu trong Firestore (thống nhất với bên nhà tuyển dụng)
+    public static final String STATUS_PENDING  = "Pending";
+    public static final String STATUS_REVIEWED = "Reviewed";
+    public static final String STATUS_ACCEPTED = "Accepted";
+    public static final String STATUS_REJECTED = "Rejected";
+
     private String id;
     private String jobId;
     private String jobTitle;
     private String companyName;
+    private String employerId;
     private String userId;
     private String applicantName;
     private String applicantEmail;
@@ -14,19 +24,20 @@ public class Application implements Serializable {
     private String education;
     private String experience;
     private String skills;
-    private String status; // "Đang chờ", "Được duyệt", "Từ chối"
+    private String status; // "Pending", "Reviewed", "Accepted", "Rejected"
     private long appliedDate;
 
     public Application() {
     }
 
-    public Application(String jobId, String jobTitle, String companyName, String userId,
-                       String applicantName, String applicantEmail, String applicantPhone,
+    public Application(String jobId, String jobTitle, String companyName, String employerId,
+                       String userId, String applicantName, String applicantEmail, String applicantPhone,
                        String education, String experience, String skills,
                        String status, long appliedDate) {
         this.jobId = jobId;
         this.jobTitle = jobTitle;
         this.companyName = companyName;
+        this.employerId = employerId;
         this.userId = userId;
         this.applicantName = applicantName;
         this.applicantEmail = applicantEmail;
@@ -36,6 +47,38 @@ public class Application implements Serializable {
         this.skills = skills;
         this.status = status;
         this.appliedDate = appliedDate;
+    }
+
+    /** Chuẩn hóa về giá trị tiếng Anh, vẫn hiểu dữ liệu cũ tiếng Việt đã lưu. */
+    public static String normalize(String s) {
+        if (s == null) return STATUS_PENDING;
+        switch (s) {
+            case "Reviewed":
+            case "Đã xem":
+                return STATUS_REVIEWED;
+            case "Accepted":
+            case "Được duyệt":
+                return STATUS_ACCEPTED;
+            case "Rejected":
+            case "Từ chối":
+                return STATUS_REJECTED;
+            default:
+                return STATUS_PENDING;
+        }
+    }
+
+    /** Nhãn tiếng Việt để hiển thị. */
+    public static String label(String s) {
+        switch (normalize(s)) {
+            case STATUS_REVIEWED:
+                return "Đã xem";
+            case STATUS_ACCEPTED:
+                return "Được duyệt";
+            case STATUS_REJECTED:
+                return "Từ chối";
+            default:
+                return "Đang chờ";
+        }
     }
 
     public String getId() {
@@ -70,6 +113,14 @@ public class Application implements Serializable {
         this.companyName = companyName;
     }
 
+    public String getEmployerId() {
+        return employerId;
+    }
+
+    public void setEmployerId(String employerId) {
+        this.employerId = employerId;
+    }
+
     public String getUserId() {
         return userId;
     }
@@ -78,26 +129,34 @@ public class Application implements Serializable {
         this.userId = userId;
     }
 
+    // Lưu lên Firestore với tên "fullName" / "email" / "phone" cho khớp phía nhà tuyển dụng
+
+    @PropertyName("fullName")
     public String getApplicantName() {
         return applicantName;
     }
 
+    @PropertyName("fullName")
     public void setApplicantName(String applicantName) {
         this.applicantName = applicantName;
     }
 
+    @PropertyName("email")
     public String getApplicantEmail() {
         return applicantEmail;
     }
 
+    @PropertyName("email")
     public void setApplicantEmail(String applicantEmail) {
         this.applicantEmail = applicantEmail;
     }
 
+    @PropertyName("phone")
     public String getApplicantPhone() {
         return applicantPhone;
     }
 
+    @PropertyName("phone")
     public void setApplicantPhone(String applicantPhone) {
         this.applicantPhone = applicantPhone;
     }

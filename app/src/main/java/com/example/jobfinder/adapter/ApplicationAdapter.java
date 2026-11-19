@@ -1,5 +1,6 @@
 package com.example.jobfinder.adapter;
 
+import android.graphics.drawable.GradientDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +13,7 @@ import com.example.jobfinder.R;
 import com.example.jobfinder.model.Application;
 
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -45,32 +47,49 @@ public class ApplicationAdapter extends RecyclerView.Adapter<ApplicationAdapter.
         holder.tvAppCompanyName.setText(app.getCompanyName());
 
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault());
-        String dateStr = sdf.format(app.getAppliedDate());
+        String dateStr = sdf.format(new Date(app.getAppliedDate()));
         holder.tvAppDate.setText("Ngày ứng tuyển: " + dateStr);
 
-        holder.tvAppStatus.setText(app.getStatus());
+        // Nhãn tiếng Việt, dù Firestore lưu "Pending"/"Accepted"...
+        holder.tvAppStatus.setText(Application.label(app.getStatus()));
 
-        switch (app.getStatus()) {
-            case "Được duyệt":
-                holder.tvAppStatus.setTextColor(0xFF4CAF50);
-                holder.tvAppStatus.setBackgroundColor(0xFFE8F5E9);
+        int textColor;
+        int bgColor;
+        switch (Application.normalize(app.getStatus())) {
+            case Application.STATUS_ACCEPTED:
+                textColor = 0xFF166534;
+                bgColor = 0xFFCDEFD6;
                 break;
-            case "Từ chối":
-                holder.tvAppStatus.setTextColor(0xFFF44336);
-                holder.tvAppStatus.setBackgroundColor(0xFFFFEBEE);
+            case Application.STATUS_REJECTED:
+                textColor = 0xFFC62828;
+                bgColor = 0xFFFFDAD6;
                 break;
-            default: // "Đang chờ"
-                holder.tvAppStatus.setTextColor(0xFFFF9800);
-                holder.tvAppStatus.setBackgroundColor(0xFFFFF3E0);
+            case Application.STATUS_REVIEWED:
+                textColor = 0xFF0F766E;
+                bgColor = 0xFFCFF0EA;
+                break;
+            default: // Pending
+                textColor = 0xFF9A4A00;
+                bgColor = 0xFFFFE0C2;
                 break;
         }
+        holder.tvAppStatus.setTextColor(textColor);
+        holder.tvAppStatus.setBackground(roundedBg(holder.itemView, bgColor));
 
         holder.itemView.setOnLongClickListener(v -> {
             if (longClickListener != null) {
                 longClickListener.onLongClick(app);
             }
-            return true; // trả về true để báo đã xử lý xong sự kiện long click
+            return true;
         });
+    }
+
+    // Nền bo tròn 12dp cho nhãn trạng thái
+    private GradientDrawable roundedBg(View view, int color) {
+        GradientDrawable bg = new GradientDrawable();
+        bg.setColor(color);
+        bg.setCornerRadius(12f * view.getResources().getDisplayMetrics().density);
+        return bg;
     }
 
     @Override

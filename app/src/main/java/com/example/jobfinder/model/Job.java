@@ -1,19 +1,23 @@
 package com.example.jobfinder.model;
 
+import com.google.firebase.firestore.IgnoreExtraProperties;
+
 import java.io.Serializable;
 
+@IgnoreExtraProperties
 public class Job implements Serializable {
     private String id;
+    private String employerId;
     private String title;
     private String companyName;
     private String location;
     private String salary;
-    private String jobType; // "Full-time", "Part-time", "Remote"...
+    private String jobType;
     private String description;
     private String requirements;
+    private String status;
     private long postedDate;
 
-    // Firestore bắt buộc phải có constructor rỗng
     public Job() {
     }
 
@@ -38,6 +42,14 @@ public class Job implements Serializable {
         this.id = id;
     }
 
+    public String getEmployerId() {
+        return employerId;
+    }
+
+    public void setEmployerId(String employerId) {
+        this.employerId = employerId;
+    }
+
     public String getTitle() {
         return title;
     }
@@ -52,6 +64,12 @@ public class Job implements Serializable {
 
     public void setCompanyName(String companyName) {
         this.companyName = companyName;
+    }
+
+    public void setCompany(String company) {
+        if (this.companyName == null) {
+            this.companyName = company;
+        }
     }
 
     public String getLocation() {
@@ -92,6 +110,18 @@ public class Job implements Serializable {
 
     public void setRequirements(String requirements) {
         this.requirements = requirements;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public boolean isClosed() {
+        return "Closed".equals(status);
     }
 
     public long getPostedDate() {

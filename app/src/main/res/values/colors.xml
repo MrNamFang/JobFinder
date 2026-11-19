@@ -2,4 +2,15 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="jf_cream">#FFF7F0</color>
+    <color name="jf_ink">#2B1B12</color>
+    <color name="jf_muted">#7A5A48</color>
+    <color name="jf_body">#4A3426</color>
+    <color name="jf_teal">#0F766E</color>
+    <color name="jf_mint">#CFF0EA</color>
+    <color name="jf_mint_ink">#0B2E2A</color>
+    <color name="jf_peach">#FFE0C2</color>
+    <color name="jf_sand">#FFE7D3</color>
+    <color name="jf_white">#FFFFFF</color>
+    <color name="jf_danger">#C62828</color>
 </resources>
