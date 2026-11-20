@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -19,6 +20,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.jobfinder.model.Job;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -33,9 +35,11 @@ import java.util.List;
 public class ManageJobsActivity extends AppCompatActivity
         implements JobManageAdapter.OnJobActionListener {
 
-    private RecyclerView rvJobs;
+    private RecyclerView rvManageJobs;
     private TextView tvEmpty;
+    private Button btnAddNewJob;
     private ProgressBar progressBar;
+
     private JobManageAdapter adapter;
     private final List<Job> jobList = new ArrayList<>();
 
@@ -48,22 +52,30 @@ public class ManageJobsActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_manage_jobs);
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(android.R.id.content), (v, insets) -> {
-            Insets bars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(bars.left, bars.top, bars.right, bars.bottom);
-            return insets;
-        });
 
-        EmployerNav.setup(this, findViewById(R.id.bottomNavEmployer), R.id.nav_jobs);
-
-        rvJobs = findViewById(R.id.rvManageJobs);
-        tvEmpty = findViewById(R.id.tvEmptyJobs);
-        progressBar = findViewById(R.id.progressBarManageJobs);
+        View root = findViewById(android.R.id.content);
+        if (root != null) {
+            ViewCompat.setOnApplyWindowInsetsListener(root, (v, insets) -> {
+                Insets bars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+                v.setPadding(bars.left, bars.top, bars.right, bars.bottom);
+                return insets;
+            });
+        }
 
         db = FirebaseFirestore.getInstance();
         employerId = FirebaseAuth.getInstance().getCurrentUser() != null
                 ? FirebaseAuth.getInstance().getCurrentUser().getUid()
                 : null;
+
+        rvManageJobs = findViewById(R.id.rvManageJobs);
+        tvEmpty = findViewById(R.id.tvEmptyManageJobs);
+        btnAddNewJob = findViewById(R.id.btnAddNewJob);
+        progressBar = findViewById(R.id.progressBarManageJobs);
+
+        BottomNavigationView bottomNav = findViewById(R.id.bottomNavEmployer);
+        if (bottomNav != null) {
+            EmployerNav.setup(this, bottomNav, R.id.nav_manage_jobs);
+        }
 
         editJobLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
@@ -77,11 +89,13 @@ public class ManageJobsActivity extends AppCompatActivity
                 });
 
         adapter = new JobManageAdapter(jobList, this);
-        rvJobs.setLayoutManager(new LinearLayoutManager(this));
-        rvJobs.setAdapter(adapter);
+        rvManageJobs.setLayoutManager(new LinearLayoutManager(this));
+        rvManageJobs.setAdapter(adapter);
 
-        findViewById(R.id.fabAddJob).setOnClickListener(v ->
-                startActivity(new Intent(this, PostJobActivity.class)));
+        if (btnAddNewJob != null) {
+            btnAddNewJob.setOnClickListener(v ->
+                    startActivity(new Intent(this, PostJobActivity.class)));
+        }
 
         loadJobs();
     }
@@ -113,7 +127,9 @@ public class ManageJobsActivity extends AppCompatActivity
                     Collections.sort(jobList, (a, b) -> Long.compare(b.getPostedDate(), a.getPostedDate()));
 
                     adapter.notifyDataSetChanged();
-                    tvEmpty.setVisibility(jobList.isEmpty() ? View.VISIBLE : View.GONE);
+                    if (tvEmpty != null) {
+                        tvEmpty.setVisibility(jobList.isEmpty() ? View.VISIBLE : View.GONE);
+                    }
                 })
                 .addOnFailureListener(e -> {
                     if (progressBar != null) progressBar.setVisibility(View.GONE);
@@ -176,7 +192,9 @@ public class ManageJobsActivity extends AppCompatActivity
                                 .delete()
                                 .addOnSuccessListener(unused -> {
                                     adapter.removeJob(job);
-                                    tvEmpty.setVisibility(jobList.isEmpty() ? View.VISIBLE : View.GONE);
+                                    if (tvEmpty != null) {
+                                        tvEmpty.setVisibility(jobList.isEmpty() ? View.VISIBLE : View.GONE);
+                                    }
                                     Toast.makeText(this, "Đã xóa tin", Toast.LENGTH_SHORT).show();
                                 })
                                 .addOnFailureListener(e ->
