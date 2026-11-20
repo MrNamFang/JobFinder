@@ -135,10 +135,54 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Hồ sơ CV"
+                android:text="Hồ sơ cá nhân &amp; CV"
                 android:textColor="@color/jf_ink"
                 android:textSize="18sp"
                 android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
+                android:text="Họ và tên"
+                android:textColor="@color/jf_muted"
+                android:textSize="13sp"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/etFullName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:background="@drawable/bg_input"
+                android:hint="Nhập họ và tên của bạn"
+                android:inputType="textPersonName"
+                android:padding="14dp"
+                android:textColor="@color/jf_ink"
+                android:textColorHint="#A58A78"
+                android:textSize="15sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
+                android:text="Số điện thoại"
+                android:textColor="@color/jf_muted"
+                android:textSize="13sp"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/etPhone"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:background="@drawable/bg_input"
+                android:hint="Nhập số điện thoại liên hệ"
+                android:inputType="phone"
+                android:padding="14dp"
+                android:textColor="@color/jf_ink"
+                android:textColorHint="#A58A78"
+                android:textSize="15sp" />
 
             <TextView
                 android:layout_width="wrap_content"

@@ -24,6 +24,9 @@ import com.google.android.material.progressindicator.LinearProgressIndicator;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class ProfileFragment extends Fragment {
 
     private static final String NOT_UPDATED = "Chưa cập nhật";
@@ -31,7 +34,7 @@ public class ProfileFragment extends Fragment {
     private TextView tvAvatar, tvProfileName, tvProfileEmail, tvProfilePhone;
     private TextView tvProgressPercent, tvProgressHint;
     private LinearProgressIndicator progressProfile;
-    private EditText etEducation, etExperience, etSkills;
+    private EditText etFullName, etPhone, etEducation, etExperience, etSkills;
     private Button btnSaveCv, btnLogout, btnMyApplications, btnNotifications, btnFeedback;
 
     private FirebaseAuth mAuth;
@@ -64,9 +67,13 @@ public class ProfileFragment extends Fragment {
         tvProgressPercent = view.findViewById(R.id.tvProgressPercent);
         tvProgressHint = view.findViewById(R.id.tvProgressHint);
         progressProfile = view.findViewById(R.id.progressProfile);
+
+        etFullName = view.findViewById(R.id.etFullName);
+        etPhone = view.findViewById(R.id.etPhone);
         etEducation = view.findViewById(R.id.etEducation);
         etExperience = view.findViewById(R.id.etExperience);
         etSkills = view.findViewById(R.id.etSkills);
+
         btnSaveCv = view.findViewById(R.id.btnSaveCv);
         btnLogout = view.findViewById(R.id.btnLogout);
         btnMyApplications = view.findViewById(R.id.btnMyApplications);
@@ -108,6 +115,13 @@ public class ProfileFragment extends Fragment {
                             tvAvatar.setText(currentName.isEmpty() || NOT_UPDATED.equals(currentName)
                                     ? "?" : currentName.substring(0, 1).toUpperCase());
 
+                            if (etFullName != null) {
+                                etFullName.setText(currentName.equals(NOT_UPDATED) ? "" : currentName);
+                            }
+                            if (etPhone != null) {
+                                etPhone.setText(currentPhone.equals(NOT_UPDATED) ? "" : currentPhone);
+                            }
+
                             etEducation.setText(user.getEducation());
                             etExperience.setText(user.getExperience());
                             etSkills.setText(user.getSkills());
@@ -136,18 +150,44 @@ public class ProfileFragment extends Fragment {
     private void saveCvInfo() {
         if (currentUid == null) return;
 
+        String fullName = etFullName != null ? etFullName.getText().toString().trim() : "";
+        String phone = etPhone != null ? etPhone.getText().toString().trim() : "";
         String education = etEducation.getText().toString().trim();
         String experience = etExperience.getText().toString().trim();
         String skills = etSkills.getText().toString().trim();
 
+        if (fullName.isEmpty()) {
+            Toast.makeText(getContext(), "Vui lòng nhập họ và tên", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        Map<String, Object> updates = new HashMap<>();
+        updates.put("fullName", fullName);
+        updates.put("phone", phone);
+        updates.put("education", education);
+        updates.put("experience", experience);
+        updates.put("skills", skills);
+
+        btnSaveCv.setEnabled(false);
+
         db.collection("users").document(currentUid)
-                .update("education", education, "experience", experience, "skills", skills)
+                .update(updates)
                 .addOnSuccessListener(unused -> {
-                    Toast.makeText(getContext(), "Đã lưu hồ sơ CV!", Toast.LENGTH_SHORT).show();
+                    btnSaveCv.setEnabled(true);
+                    currentName = fullName;
+                    currentPhone = phone;
+
+                    tvProfileName.setText(fullName);
+                    tvProfilePhone.setText(phone.isEmpty() ? NOT_UPDATED : phone);
+                    tvAvatar.setText(fullName.substring(0, 1).toUpperCase());
+
+                    Toast.makeText(getContext(), "Đã lưu hồ sơ cá nhân và CV!", Toast.LENGTH_SHORT).show();
                     updateProgress();
                 })
-                .addOnFailureListener(e ->
-                        Toast.makeText(getContext(), "Lỗi lưu hồ sơ: " + e.getMessage(), Toast.LENGTH_LONG).show());
+                .addOnFailureListener(e -> {
+                    btnSaveCv.setEnabled(true);
+                    Toast.makeText(getContext(), "Lỗi lưu hồ sơ: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                });
     }
 
     // 5 mục, mỗi mục 20%: tên, SĐT, học vấn, kinh nghiệm, kỹ năng
@@ -164,7 +204,7 @@ public class ProfileFragment extends Fragment {
         tvProgressPercent.setText(percent + "%");
         tvProgressHint.setText(percent >= 100
                 ? "Hồ sơ đã hoàn chỉnh, sẵn sàng ứng tuyển!"
-                : "Điền đủ học vấn, kinh nghiệm và kỹ năng để nhà tuyển dụng chú ý hơn.");
+                : "Điền đủ thông tin để nhà tuyển dụng chú ý hơn.");
     }
 
     private boolean isFilled(String s) {

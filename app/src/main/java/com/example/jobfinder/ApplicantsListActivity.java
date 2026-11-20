@@ -17,8 +17,10 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.example.jobfinder.model.Application;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
@@ -28,9 +30,6 @@ import java.util.List;
  * Màn "Quản lý ứng viên" của Employer: xem danh sách ứng viên đã nộp đơn
  * vào các tin của mình. Bấm vào 1 ứng viên sẽ mở ApplicantDetailActivity
  * để xem hồ sơ đầy đủ và cập nhật trạng thái.
- *
- * ĐÃ NỐI FIRESTORE THẬT. Query collection "applications", lọc theo
- * employerId == uid người đang đăng nhập.
  */
 public class ApplicantsListActivity extends AppCompatActivity
         implements ApplicantAdapter.OnApplicantClickListener {
@@ -39,7 +38,7 @@ public class ApplicantsListActivity extends AppCompatActivity
     private TextView tvEmpty;
     private ProgressBar progressBar;
     private ApplicantAdapter adapter;
-    private final List<JobApplication> applicantList = new ArrayList<>();
+    private final List<Application> applicantList = new ArrayList<>();
 
     private FirebaseFirestore db;
     private String employerId;
@@ -60,8 +59,6 @@ public class ApplicantsListActivity extends AppCompatActivity
 
         rvApplicants = findViewById(R.id.rvApplicants);
         tvEmpty = findViewById(R.id.tvEmptyApplicants);
-        // Nếu layout của bạn chưa có id progressBarApplicants, không sao,
-        // findViewById() sẽ trả về null và code phía dưới có kiểm tra null.
         progressBar = findViewById(R.id.progressBarApplicants);
 
         db = FirebaseFirestore.getInstance();
@@ -73,8 +70,8 @@ public class ApplicantsListActivity extends AppCompatActivity
                 new ActivityResultContracts.StartActivityForResult(),
                 result -> {
                     if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
-                        JobApplication updated =
-                                (JobApplication) result.getData().getSerializableExtra("updatedApplication");
+                        Application updated =
+                                (Application) result.getData().getSerializableExtra("updatedApplication");
                         if (updated != null) {
                             adapter.updateApplicant(updated);
                         }
@@ -98,13 +95,13 @@ public class ApplicantsListActivity extends AppCompatActivity
 
         db.collection("applications")
                 .whereEqualTo("employerId", employerId)
-                .orderBy("appliedDate", com.google.firebase.firestore.Query.Direction.DESCENDING)
+                .orderBy("appliedDate", Query.Direction.DESCENDING)
                 .get()
                 .addOnSuccessListener(snapshots -> {
                     if (progressBar != null) progressBar.setVisibility(View.GONE);
                     applicantList.clear();
                     for (QueryDocumentSnapshot doc : snapshots) {
-                        JobApplication app = doc.toObject(JobApplication.class);
+                        Application app = doc.toObject(Application.class);
                         app.setId(doc.getId());
                         applicantList.add(app);
                     }
@@ -118,7 +115,7 @@ public class ApplicantsListActivity extends AppCompatActivity
     }
 
     @Override
-    public void onApplicantClick(JobApplication application) {
+    public void onApplicantClick(Application application) {
         Intent intent = new Intent(this, ApplicantDetailActivity.class);
         intent.putExtra("application", application);
         applicantDetailLauncher.launch(intent);

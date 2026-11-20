@@ -8,15 +8,11 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.example.jobfinder.model.Job;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 /**
- * Màn Sửa tin tuyển dụng.
- *
- * Nhận object "job" cũ từ ManageJobsActivity qua Intent, đổ dữ liệu có sẵn
- * vào các ô nhập liệu. Khi bấm "Cập nhật", KHÔNG tự lưu Firestore ở đây
- * (chưa có Firestore) mà "trả object job đã sửa" lại cho màn gọi nó, thông
- * qua setResult() + finish().
+ * Màn Sửa tin tuyển dụng của Employer.
  */
 public class EditJobActivity extends Activity {
 
@@ -47,10 +43,8 @@ public class EditJobActivity extends Activity {
             return;
         }
 
-        // Đổ dữ liệu cũ vào các ô -- đây là điểm khác biệt so với PostJobActivity
-        // (PostJobActivity bắt đầu với ô trống, còn đây bắt đầu với dữ liệu có sẵn)
         etTitle.setText(job.getTitle());
-        etCompany.setText(job.getCompany());
+        etCompany.setText(job.getCompanyName());
         etLocation.setText(job.getLocation());
         etSalary.setText(job.getSalary());
         etDescription.setText(job.getDescription());
@@ -69,22 +63,18 @@ public class EditJobActivity extends Activity {
             return;
         }
 
-        // Cập nhật lại các field của object "job" bằng dữ liệu mới nhập
         job.setTitle(title);
+        job.setCompanyName(company);
         job.setCompany(company);
         job.setLocation(location);
         job.setSalary(etSalary.getText().toString().trim());
         job.setDescription(etDescription.getText().toString().trim());
 
-        btnUpdate.setEnabled(false); // tránh bấm 2 lần trong lúc chờ Firestore phản hồi
+        btnUpdate.setEnabled(false);
 
-        // set() ghi đè TOÀN BỘ document bằng object "job" hiện tại -- vì mình
-        // đã đổ sẵn dữ liệu cũ vào object này lúc mở màn (constructor rỗng +
-        // các setter), nên set() ở đây an toàn, không làm mất field nào.
         db.collection("jobs").document(job.getId())
                 .set(job)
                 .addOnSuccessListener(unused -> {
-                    // "Trả kết quả" lại cho Activity đã mở màn này (ManageJobsActivity):
                     Intent resultIntent = new Intent();
                     resultIntent.putExtra("updatedJob", job);
                     setResult(Activity.RESULT_OK, resultIntent);

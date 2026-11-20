@@ -1,22 +1,24 @@
 package com.example.jobfinder;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.example.jobfinder.model.Job;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -25,13 +27,15 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class ManageJobsActivity extends AppCompatActivity implements JobManageAdapter.OnJobActionListener {
+/**
+ * Màn Quản lý tin tuyển dụng của Employer.
+ */
+public class ManageJobsActivity extends AppCompatActivity
+        implements JobManageAdapter.OnJobActionListener {
 
-    private RecyclerView rvManageJobs;
+    private RecyclerView rvJobs;
     private TextView tvEmpty;
-    private Button btnAddNewJob;
     private ProgressBar progressBar;
-
     private JobManageAdapter adapter;
     private final List<Job> jobList = new ArrayList<>();
 
@@ -44,19 +48,22 @@ public class ManageJobsActivity extends AppCompatActivity implements JobManageAd
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_manage_jobs);
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(android.R.id.content), (v, insets) -> {
+            Insets bars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            v.setPadding(bars.left, bars.top, bars.right, bars.bottom);
+            return insets;
+        });
+
+        EmployerNav.setup(this, findViewById(R.id.bottomNavEmployer), R.id.nav_jobs);
+
+        rvJobs = findViewById(R.id.rvManageJobs);
+        tvEmpty = findViewById(R.id.tvEmptyJobs);
+        progressBar = findViewById(R.id.progressBarManageJobs);
 
         db = FirebaseFirestore.getInstance();
         employerId = FirebaseAuth.getInstance().getCurrentUser() != null
                 ? FirebaseAuth.getInstance().getCurrentUser().getUid()
                 : null;
-
-        rvManageJobs = findViewById(R.id.rvManageJobs);
-        tvEmpty = findViewById(R.id.tvEmptyManageJobs);
-        btnAddNewJob = findViewById(R.id.btnAddNewJob);
-        progressBar = findViewById(R.id.progressBarManageJobs);
-
-        BottomNavigationView bottomNav = findViewById(R.id.bottomNavEmployer);
-        EmployerNav.setup(this, bottomNav, R.id.nav_manage_jobs);
 
         editJobLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
@@ -70,11 +77,13 @@ public class ManageJobsActivity extends AppCompatActivity implements JobManageAd
                 });
 
         adapter = new JobManageAdapter(jobList, this);
-        rvManageJobs.setLayoutManager(new LinearLayoutManager(this));
-        rvManageJobs.setAdapter(adapter);
+        rvJobs.setLayoutManager(new LinearLayoutManager(this));
+        rvJobs.setAdapter(adapter);
 
-        btnAddNewJob.setOnClickListener(v ->
+        findViewById(R.id.fabAddJob).setOnClickListener(v ->
                 startActivity(new Intent(this, PostJobActivity.class)));
+
+        loadJobs();
     }
 
     @Override
@@ -115,9 +124,14 @@ public class ManageJobsActivity extends AppCompatActivity implements JobManageAd
     private Job toJob(DocumentSnapshot doc) {
         Long posted = doc.getLong("postedDate");
 
+        String company = text(doc, "companyName");
+        if (company.isEmpty()) {
+            company = text(doc, "company");
+        }
+
         Job job = new Job(
                 text(doc, "title"),
-                text(doc, "company"),
+                company,
                 text(doc, "location"),
                 text(doc, "salary"),
                 text(doc, "jobType"),
@@ -132,6 +146,11 @@ public class ManageJobsActivity extends AppCompatActivity implements JobManageAd
         if (status != null) {
             job.setStatus(status);
         }
+        String adminStatus = doc.getString("adminStatus");
+        if (adminStatus != null) {
+            job.setAdminStatus(adminStatus);
+        }
+        job.setRejectReason(doc.getString("rejectReason"));
         return job;
     }
 
@@ -169,7 +188,7 @@ public class ManageJobsActivity extends AppCompatActivity implements JobManageAd
 
     @Override
     public void onToggleStatusClick(Job job) {
-        boolean isCurrentlyOpen = job.getStatus() == null || job.getStatus().equals("Open");
+        boolean isCurrentlyOpen = job.isOpen();
         String newStatus = isCurrentlyOpen ? "Closed" : "Open";
 
         db.collection("jobs").document(job.getId())

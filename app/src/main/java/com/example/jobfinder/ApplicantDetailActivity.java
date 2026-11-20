@@ -9,6 +9,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.jobfinder.model.Application;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.text.SimpleDateFormat;
@@ -17,21 +18,23 @@ import java.util.Locale;
 
 /**
  * Xem chi tiết hồ sơ 1 ứng viên + cập nhật trạng thái ứng tuyển.
- * Nhận object JobApplication qua Intent, trả lại object đã cập nhật
- * cho ApplicantsListActivity qua setResult() (giống cơ chế EditJobActivity).
+ * Nhận object Application qua Intent, trả lại object đã cập nhật
+ * cho ApplicantsListActivity qua setResult().
  */
 public class ApplicantDetailActivity extends Activity {
 
-    private JobApplication application;
+    private Application application;
     private Spinner spinnerStatus;
     private Button btnUpdateStatus;
     private FirebaseFirestore db;
 
-    // Nhãn hiển thị tiếng Việt cho user xem, nhưng giá trị lưu thật (status)
-    // vẫn là tiếng Anh không dấu ("Pending"...) để dễ so sánh/lọc trong code
-    // và khớp với dữ liệu Firestore.
     private final String[] statusLabels = {"Chờ duyệt", "Đã xem", "Chấp nhận", "Từ chối"};
-    private final String[] statusValues = {"Pending", "Reviewed", "Accepted", "Rejected"};
+    private final String[] statusValues = {
+            Application.STATUS_PENDING,
+            Application.STATUS_REVIEWED,
+            Application.STATUS_ACCEPTED,
+            Application.STATUS_REJECTED
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,7 +43,7 @@ public class ApplicantDetailActivity extends Activity {
 
         db = FirebaseFirestore.getInstance();
 
-        application = (JobApplication) getIntent().getSerializableExtra("application");
+        application = (Application) getIntent().getSerializableExtra("application");
         if (application == null) {
             Toast.makeText(this, "Không tìm thấy dữ liệu ứng viên", Toast.LENGTH_SHORT).show();
             finish();
@@ -61,7 +64,7 @@ public class ApplicantDetailActivity extends Activity {
         tvEmail.setText("📧 " + application.getEmail());
         tvPhone.setText("📱 " + application.getPhone());
 
-        // Hồ sơ CV do ứng viên điền trong Profile (đơn mới không có coverLetter)
+        // Hồ sơ CV do ứng viên điền trong Profile
         tvCoverLetter.setText(
                 "Học vấn: " + valueOrDash(application.getEducation()) + "\n\n"
                         + "Kinh nghiệm: " + valueOrDash(application.getExperience()) + "\n\n"
@@ -75,7 +78,7 @@ public class ApplicantDetailActivity extends Activity {
         spinnerStatus.setAdapter(adapter);
 
         // Đặt Spinner về đúng trạng thái hiện tại của ứng viên này khi mở màn
-        int currentIndex = indexOfStatus(application.getStatus());
+        int currentIndex = indexOfStatus(Application.normalize(application.getStatus()));
         spinnerStatus.setSelection(currentIndex);
 
         btnUpdateStatus.setOnClickListener(v -> updateStatus());
@@ -99,7 +102,6 @@ public class ApplicantDetailActivity extends Activity {
         application.setStatus(newStatus);
         btnUpdateStatus.setEnabled(false);
 
-        // update("status", ...) chỉ sửa đúng 1 field, không đụng tới các field khác
         db.collection("applications").document(application.getId())
                 .update("status", newStatus)
                 .addOnSuccessListener(unused -> {

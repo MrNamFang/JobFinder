@@ -16,6 +16,10 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.SetOptions;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class EmployerProfileActivity extends AppCompatActivity {
 
@@ -66,23 +70,37 @@ public class EmployerProfileActivity extends AppCompatActivity {
             return;
         }
 
-        db.collection("employers").document(uid).get()
-                .addOnSuccessListener(this::handleProfileLoaded)
+        // Ưu tiên đọc từ collection "users" đã được gom gọn
+        db.collection("users").document(uid).get()
+                .addOnSuccessListener(doc -> {
+                    if (doc.exists() && doc.getString("companyName") != null) {
+                        etCompanyName.setText(doc.getString("companyName"));
+                        etDescription.setText(doc.getString("companyDescription"));
+                        etAddress.setText(doc.getString("companyAddress"));
+                        String phone = doc.getString("phone");
+                        if (phone != null) etPhone.setText(phone);
+                    } else {
+                        // Tương thích ngược: thử đọc từ collection "employers" cũ nếu có
+                        db.collection("employers").document(uid).get()
+                                .addOnSuccessListener(oldDoc -> {
+                                    if (oldDoc.exists()) {
+                                        etCompanyName.setText(oldDoc.getString("companyName"));
+                                        etDescription.setText(oldDoc.getString("description"));
+                                        etAddress.setText(oldDoc.getString("address"));
+                                        etPhone.setText(oldDoc.getString("phone"));
+                                    }
+                                });
+                    }
+                })
                 .addOnFailureListener(e ->
                         Toast.makeText(this, "Lỗi tải hồ sơ: " + e.getMessage(), Toast.LENGTH_SHORT).show());
     }
 
-    private void handleProfileLoaded(DocumentSnapshot doc) {
-        if (doc.exists()) {
-            etCompanyName.setText(doc.getString("companyName"));
-            etDescription.setText(doc.getString("description"));
-            etAddress.setText(doc.getString("address"));
-            etPhone.setText(doc.getString("phone"));
-        }
-    }
-
     private void saveProfile() {
         String companyName = etCompanyName.getText().toString().trim();
+        String description = etDescription.getText().toString().trim();
+        String address = etAddress.getText().toString().trim();
+        String phone = etPhone.getText().toString().trim();
 
         if (TextUtils.isEmpty(companyName)) {
             Toast.makeText(this, "Vui lòng nhập tên công ty", Toast.LENGTH_SHORT).show();
@@ -94,19 +112,17 @@ public class EmployerProfileActivity extends AppCompatActivity {
             return;
         }
 
-        EmployerProfile profile = new EmployerProfile(
-                uid,
-                companyName,
-                etDescription.getText().toString().trim(),
-                etAddress.getText().toString().trim(),
-                etPhone.getText().toString().trim(),
-                userEmail
-        );
-
         btnSaveProfile.setEnabled(false);
 
-        db.collection("employers").document(uid)
-                .set(profile)
+        // Lưu thông tin công ty trực tiếp vào document của tài khoản trong "users" (Gom gọn CSDL)
+        Map<String, Object> userUpdates = new HashMap<>();
+        userUpdates.put("companyName", companyName);
+        userUpdates.put("companyDescription", description);
+        userUpdates.put("companyAddress", address);
+        userUpdates.put("phone", phone);
+
+        db.collection("users").document(uid)
+                .set(userUpdates, SetOptions.merge())
                 .addOnSuccessListener(unused -> {
                     btnSaveProfile.setEnabled(true);
                     Toast.makeText(this, "Đã lưu thông tin công ty!", Toast.LENGTH_SHORT).show();

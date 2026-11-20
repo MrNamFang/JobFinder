@@ -158,7 +158,11 @@ public class AdminJobDetailActivity extends AppCompatActivity {
 
         Map<String, Object> updates = new HashMap<>();
         updates.put("adminStatus", newStatus);
-        updates.put("status", newStatus);
+        if ("rejected".equalsIgnoreCase(newStatus)) {
+            updates.put("status", "Closed");
+        } else if ("approved".equalsIgnoreCase(newStatus)) {
+            updates.put("status", "Open");
+        }
         if (rejectReason != null) {
             updates.put("rejectReason", rejectReason);
         }

@@ -1,6 +1,7 @@
 package com.example.jobfinder.model;
 
 import com.google.firebase.firestore.IgnoreExtraProperties;
+import com.google.firebase.firestore.PropertyName;
 
 import java.io.Serializable;
 
@@ -15,10 +16,22 @@ public class Job implements Serializable {
     private String jobType;
     private String description;
     private String requirements;
-    private String status;
+    private String imageUrl;
+
+    // Trạng thái tuyển dụng của Employer: "Open" (mở tuyển) | "Closed" (đóng tuyển)
+    private String status = "Open";
+
+    // Trạng thái kiểm duyệt của Admin: "pending" (chờ duyệt) | "approved" (đã duyệt) | "rejected" (từ chối)
+    private String adminStatus = "pending";
+
+    // Lý do từ chối nếu Admin từ chối bài
+    private String rejectReason;
+
     private long postedDate;
 
     public Job() {
+        this.status = "Open";
+        this.adminStatus = "approved"; // Mặc định tin hợp lệ để hiển thị liền
     }
 
     public Job(String id, String title, String companyName, String location,
@@ -32,6 +45,36 @@ public class Job implements Serializable {
         this.description = description;
         this.requirements = requirements;
         this.postedDate = postedDate;
+        this.status = "Open";
+        this.adminStatus = "approved";
+    }
+
+    public Job(String title, String company, String location, String salary,
+               String jobType, String description, String imageUrl, long postedDate) {
+        this.title = title;
+        this.companyName = company;
+        this.location = location;
+        this.salary = salary;
+        this.jobType = jobType;
+        this.description = description;
+        this.imageUrl = imageUrl;
+        this.postedDate = postedDate;
+        this.status = "Open";
+        this.adminStatus = "approved";
+    }
+
+    public Job(String title, String company, String location, String salary,
+               String jobType, String description, String requirements, long postedDate, String status) {
+        this.title = title;
+        this.companyName = company;
+        this.location = location;
+        this.salary = salary;
+        this.jobType = jobType;
+        this.description = description;
+        this.requirements = requirements;
+        this.postedDate = postedDate;
+        this.status = status != null ? status : "Open";
+        this.adminStatus = "approved";
     }
 
     public String getId() {
@@ -58,16 +101,25 @@ public class Job implements Serializable {
         this.title = title;
     }
 
+    @PropertyName("companyName")
     public String getCompanyName() {
         return companyName;
     }
 
+    @PropertyName("companyName")
     public void setCompanyName(String companyName) {
         this.companyName = companyName;
     }
 
+    // Alias hỗ trợ tương thích với trường "company" cũ trên Firestore
+    @PropertyName("company")
+    public String getCompany() {
+        return companyName;
+    }
+
+    @PropertyName("company")
     public void setCompany(String company) {
-        if (this.companyName == null) {
+        if (this.companyName == null || this.companyName.isEmpty()) {
             this.companyName = company;
         }
     }
@@ -112,6 +164,14 @@ public class Job implements Serializable {
         this.requirements = requirements;
     }
 
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
     public String getStatus() {
         return status;
     }
@@ -120,8 +180,32 @@ public class Job implements Serializable {
         this.status = status;
     }
 
+    public String getAdminStatus() {
+        return adminStatus;
+    }
+
+    public void setAdminStatus(String adminStatus) {
+        this.adminStatus = adminStatus;
+    }
+
+    public String getRejectReason() {
+        return rejectReason;
+    }
+
+    public void setRejectReason(String rejectReason) {
+        this.rejectReason = rejectReason;
+    }
+
     public boolean isClosed() {
-        return "Closed".equals(status);
+        return "Closed".equalsIgnoreCase(status);
+    }
+
+    public boolean isOpen() {
+        return status == null || "Open".equalsIgnoreCase(status);
+    }
+
+    public boolean isApproved() {
+        return adminStatus == null || "approved".equalsIgnoreCase(adminStatus);
     }
 
     public long getPostedDate() {

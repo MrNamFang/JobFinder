@@ -100,7 +100,7 @@ public class HomeFragment extends Fragment {
                     for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
                         Job job = doc.toObject(Job.class);
                         job.setId(doc.getId());
-                        if (!job.isClosed()) {
+                        if (!job.isClosed() && !"rejected".equalsIgnoreCase(job.getAdminStatus())) {
                             jobList.add(job);
                         }
                     }

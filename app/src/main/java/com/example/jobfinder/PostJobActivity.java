@@ -15,6 +15,8 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.example.jobfinder.model.Job;
+import com.example.jobfinder.model.User;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -36,7 +38,6 @@ public class PostJobActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_post_job);
 
-        // Chừa chỗ cho thanh trạng thái và thanh điều hướng của máy
         View root = findViewById(android.R.id.content);
         ViewCompat.setOnApplyWindowInsetsListener(root, (v, insets) -> {
             Insets bars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
@@ -44,7 +45,6 @@ public class PostJobActivity extends AppCompatActivity {
             return insets;
         });
 
-        // Nút quay lại (hiện khi theme có ActionBar)
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setTitle("Đăng tin tuyển dụng");
@@ -67,7 +67,25 @@ public class PostJobActivity extends AppCompatActivity {
                 this, android.R.layout.simple_spinner_dropdown_item, jobTypes);
         spinnerJobType.setAdapter(adapter);
 
+        // Tự động điền sẵn tên công ty nếu Employer đã cập nhật hồ sơ
+        prefillCompanyName();
+
         btnSubmitJob.setOnClickListener(v -> submitJob());
+    }
+
+    private void prefillCompanyName() {
+        FirebaseUser currentUser = auth.getCurrentUser();
+        if (currentUser == null) return;
+
+        db.collection("users").document(currentUser.getUid()).get()
+                .addOnSuccessListener(doc -> {
+                    if (doc.exists()) {
+                        String company = doc.getString("companyName");
+                        if (company != null && !company.trim().isEmpty() && etCompany != null) {
+                            etCompany.setText(company.trim());
+                        }
+                    }
+                });
     }
 
     @Override
@@ -99,6 +117,10 @@ public class PostJobActivity extends AppCompatActivity {
         Job job = new Job(title, company, location, salary, jobType, description,
                 "", System.currentTimeMillis());
         job.setEmployerId(currentUser.getUid());
+        job.setCompanyName(company);
+        job.setCompany(company);
+        job.setStatus("Open");
+        job.setAdminStatus("approved"); // Mặc định tin hợp lệ để hiển thị liền
 
         setLoading(true);
 

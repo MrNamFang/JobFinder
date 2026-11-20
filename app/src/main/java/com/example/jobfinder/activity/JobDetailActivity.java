@@ -72,7 +72,11 @@ public class JobDetailActivity extends AppCompatActivity {
 
     private void displayJobInfo(Job job) {
         tvDetailTitle.setText(job.getTitle());
-        tvDetailCompany.setText(job.getCompanyName());
+        String comp = job.getCompanyName();
+        if (comp == null || comp.trim().isEmpty()) {
+            comp = job.getCompany();
+        }
+        tvDetailCompany.setText(comp != null && !comp.trim().isEmpty() ? comp : "Chưa cập nhật");
         tvDetailSalary.setText(job.getSalary());
         tvDetailLocation.setText(job.getLocation());
         tvDetailJobType.setText(job.getJobType());
@@ -221,18 +225,40 @@ public class JobDetailActivity extends AppCompatActivity {
                         return;
                     }
 
+                    String comp = currentJob.getCompanyName();
+                    if (comp == null || comp.trim().isEmpty()) {
+                        comp = currentJob.getCompany();
+                    }
+                    if (comp == null || comp.trim().isEmpty()) {
+                        comp = "Chưa cập nhật";
+                    }
+
+                    String name = user.getFullName();
+                    if (name == null || name.trim().isEmpty() || "Chưa cập nhật".equals(name.trim())) {
+                        name = mAuth.getCurrentUser() != null && mAuth.getCurrentUser().getEmail() != null
+                                ? mAuth.getCurrentUser().getEmail() : "Ứng viên";
+                    }
+                    String email = user.getEmail();
+                    if (email == null || email.trim().isEmpty()) {
+                        email = mAuth.getCurrentUser() != null ? mAuth.getCurrentUser().getEmail() : "";
+                    }
+                    String phone = user.getPhone() != null && !"Chưa cập nhật".equals(user.getPhone()) ? user.getPhone() : "";
+                    String edu = user.getEducation() != null ? user.getEducation() : "";
+                    String exp = user.getExperience() != null ? user.getExperience() : "";
+                    String skills = user.getSkills() != null ? user.getSkills() : "";
+
                     Application application = new Application(
                             currentJob.getId(),
                             currentJob.getTitle(),
-                            currentJob.getCompanyName(),
-                            currentJob.getEmployerId(),      // để nhà tuyển dụng lọc được đơn
+                            comp,
+                            currentJob.getEmployerId() != null ? currentJob.getEmployerId() : "",
                             currentUid,
-                            user.getFullName(),
-                            user.getEmail(),
-                            user.getPhone(),
-                            user.getEducation(),
-                            user.getExperience(),
-                            user.getSkills(),
+                            name,
+                            email,
+                            phone,
+                            edu,
+                            exp,
+                            skills,
                             Application.STATUS_PENDING,
                             System.currentTimeMillis()
                     );

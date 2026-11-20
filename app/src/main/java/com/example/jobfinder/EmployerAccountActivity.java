@@ -59,9 +59,15 @@ public class EmployerAccountActivity extends AppCompatActivity {
     private void loadCompanyName() {
         if (uid == null) return;
 
-        db.collection("employers").document(uid).get()
+        db.collection("users").document(uid).get()
                 .addOnSuccessListener(doc -> {
-                    String name = doc.exists() ? doc.getString("companyName") : null;
+                    String name = null;
+                    if (doc.exists()) {
+                        name = doc.getString("companyName");
+                        if (name == null || name.trim().isEmpty()) {
+                            name = doc.getString("fullName");
+                        }
+                    }
                     if (name != null && !name.trim().isEmpty()) {
                         tvAccountName.setText(name.trim());
                         tvAccountAvatar.setText(name.trim().substring(0, 1).toUpperCase());

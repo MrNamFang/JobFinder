@@ -103,7 +103,7 @@ public class LoginActivity extends AppCompatActivity {
                         Toast.makeText(this, "Không gửi được: " + e.getMessage(), Toast.LENGTH_LONG).show());
     }
 
-    // Đọc role trong Firestore rồi chuyển đến màn hình tương ứng
+    // Đọc role và trạng thái tài khoản trong Firestore rồi chuyển đến màn hình tương ứng
     private void goToMain() {
         FirebaseUser user = mAuth.getCurrentUser();
         if (user == null) return;
@@ -113,6 +113,21 @@ public class LoginActivity extends AppCompatActivity {
                 .document(user.getUid())
                 .get()
                 .addOnSuccessListener(doc -> {
+                    if (doc.exists()) {
+                        String status = doc.getString("status");
+                        Boolean blocked = doc.getBoolean("blocked");
+                        if ("banned".equalsIgnoreCase(status) || (blocked != null && blocked)) {
+                            mAuth.signOut();
+                            btnLogin.setEnabled(true);
+                            new androidx.appcompat.app.AlertDialog.Builder(this)
+                                    .setTitle("Tài khoản bị khóa")
+                                    .setMessage("Tài khoản của bạn đã bị khóa bởi Quản trị viên. Vui lòng liên hệ hỗ trợ.")
+                                    .setPositiveButton("Đóng", null)
+                                    .show();
+                            return;
+                        }
+                    }
+
                     String role = doc.getString("role");
                     Intent intent;
 

@@ -107,6 +107,11 @@ public class RegisterActivity extends AppCompatActivity {
 
     private void saveUserToFirestore(FirebaseUser firebaseUser, String fullName, String email, String phone, String role) {
         User user = new User(firebaseUser.getUid(), fullName, email, phone, role);
+        user.setStatus("active");
+        user.setCreatedAt(System.currentTimeMillis());
+        if ("employer".equals(role)) {
+            user.setCompanyName(fullName);
+        }
 
         db.collection("users").document(firebaseUser.getUid())
                 .set(user)

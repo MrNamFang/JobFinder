@@ -98,10 +98,7 @@ public class EmployerDashboardFragment extends Fragment {
                 ? FirebaseAuth.getInstance().getCurrentUser().getUid()
                 : null;
 
-        // TODO: thay bằng tên công ty thật lấy từ collection "users"/"employers" ở bước làm Profile sau
-        tvCompanyName.setText(FirebaseAuth.getInstance().getCurrentUser() != null
-                ? FirebaseAuth.getInstance().getCurrentUser().getEmail()
-                : "");
+        loadEmployerInfo();
 
         btnPostNewJob.setOnClickListener(v -> {
             // TODO: PostJobActivity sẽ làm ở bước tiếp theo
@@ -219,7 +216,31 @@ public class EmployerDashboardFragment extends Fragment {
     public void onResume() {
         super.onResume();
         // Cập nhật lại số liệu mỗi khi quay lại Dashboard (vd sau khi đăng tin mới)
+        loadEmployerInfo();
         loadDashboardStats();
+    }
+
+    private void loadEmployerInfo() {
+        if (employerId == null) return;
+        db.collection("users").document(employerId).get()
+                .addOnSuccessListener(doc -> {
+                    if (!isAdded()) return;
+                    if (doc.exists()) {
+                        String comp = doc.getString("companyName");
+                        if (comp != null && !comp.trim().isEmpty()) {
+                            tvCompanyName.setText(comp.trim());
+                            return;
+                        }
+                        String name = doc.getString("fullName");
+                        if (name != null && !name.trim().isEmpty()) {
+                            tvCompanyName.setText(name.trim());
+                            return;
+                        }
+                    }
+                    if (FirebaseAuth.getInstance().getCurrentUser() != null) {
+                        tvCompanyName.setText(FirebaseAuth.getInstance().getCurrentUser().getEmail());
+                    }
+                });
     }
 
     @Override

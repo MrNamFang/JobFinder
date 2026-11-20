@@ -10,14 +10,12 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.jobfinder.model.Job;
+
 import java.util.List;
 
 /**
  * Adapter cho màn "Quản lý tin tuyển dụng" của Employer.
- *
- * Mỗi dòng có: chip trạng thái (Đang tuyển/Đã đóng), nút Toggle trạng thái,
- * nút Sửa, nút Xóa. Adapter không tự quyết định phải làm gì khi bấm các nút
- * này -- chỉ "báo" lại cho Activity qua interface OnJobActionListener.
  */
 public class JobManageAdapter extends RecyclerView.Adapter<JobManageAdapter.JobViewHolder> {
 
@@ -52,10 +50,10 @@ public class JobManageAdapter extends RecyclerView.Adapter<JobManageAdapter.JobV
         holder.itemView.setBackgroundResource(cardBgs[position % 3]);
 
         holder.tvTitle.setText(job.getTitle());
-        holder.tvCompany.setText(job.getCompany());
+        holder.tvCompany.setText(job.getCompanyName());
         holder.tvLocation.setText(job.getLocation());
 
-        boolean isOpen = job.getStatus() == null || job.getStatus().equals("Open");
+        boolean isOpen = job.isOpen();
 
         // Chip trạng thái: chữ + màu nền đổi theo Open/Closed
         holder.tvStatus.setText(isOpen ? "Đang tuyển" : "Đã đóng");
@@ -66,8 +64,7 @@ public class JobManageAdapter extends RecyclerView.Adapter<JobManageAdapter.JobV
         chip.setColor(isOpen ? 0xFFFFFFFF : 0xFFEADFD6);
         holder.tvStatus.setBackground(chip);
 
-        // Nút toggle: chữ đổi theo trạng thái NGƯỢC LẠI với hiện tại, vì nó
-        // thể hiện HÀNH ĐỘNG sẽ xảy ra khi bấm, không phải trạng thái hiện tại
+        // Nút toggle
         holder.btnToggleStatus.setText(isOpen ? "Đóng tin" : "Mở lại");
 
         holder.btnEdit.setOnClickListener(v -> listener.onEditClick(job));
@@ -90,7 +87,7 @@ public class JobManageAdapter extends RecyclerView.Adapter<JobManageAdapter.JobV
 
     public void updateJob(Job updatedJob) {
         for (int i = 0; i < jobList.size(); i++) {
-            if (jobList.get(i).getId().equals(updatedJob.getId())) {
+            if (jobList.get(i).getId() != null && jobList.get(i).getId().equals(updatedJob.getId())) {
                 jobList.set(i, updatedJob);
                 notifyItemChanged(i);
                 break;
@@ -98,15 +95,15 @@ public class JobManageAdapter extends RecyclerView.Adapter<JobManageAdapter.JobV
         }
     }
 
-    static class JobViewHolder extends RecyclerView.ViewHolder {
+    public static class JobViewHolder extends RecyclerView.ViewHolder {
         TextView tvTitle, tvCompany, tvLocation, tvStatus;
         Button btnEdit, btnDelete, btnToggleStatus;
 
-        JobViewHolder(@NonNull View itemView) {
+        public JobViewHolder(@NonNull View itemView) {
             super(itemView);
-            tvTitle = itemView.findViewById(R.id.tvManageJobTitle);
-            tvCompany = itemView.findViewById(R.id.tvManageJobCompany);
-            tvLocation = itemView.findViewById(R.id.tvManageJobLocation);
+            tvTitle = itemView.findViewById(R.id.tvJobTitle);
+            tvCompany = itemView.findViewById(R.id.tvJobCompany);
+            tvLocation = itemView.findViewById(R.id.tvJobLocation);
             tvStatus = itemView.findViewById(R.id.tvJobStatus);
             btnEdit = itemView.findViewById(R.id.btnEditJob);
             btnDelete = itemView.findViewById(R.id.btnDeleteJob);

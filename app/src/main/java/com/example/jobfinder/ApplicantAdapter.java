@@ -9,18 +9,20 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.jobfinder.model.Application;
+
 import java.util.List;
 
 public class ApplicantAdapter extends RecyclerView.Adapter<ApplicantAdapter.ApplicantViewHolder> {
 
     public interface OnApplicantClickListener {
-        void onApplicantClick(JobApplication application);
+        void onApplicantClick(Application application);
     }
 
-    private final List<JobApplication> applicantList;
+    private final List<Application> applicantList;
     private final OnApplicantClickListener listener;
 
-    public ApplicantAdapter(List<JobApplication> applicantList, OnApplicantClickListener listener) {
+    public ApplicantAdapter(List<Application> applicantList, OnApplicantClickListener listener) {
         this.applicantList = applicantList;
         this.listener = listener;
     }
@@ -35,7 +37,7 @@ public class ApplicantAdapter extends RecyclerView.Adapter<ApplicantAdapter.Appl
 
     @Override
     public void onBindViewHolder(@NonNull ApplicantViewHolder holder, int position) {
-        JobApplication app = applicantList.get(position);
+        Application app = applicantList.get(position);
 
         // Xen kẽ màu thẻ: xanh ngọc, cam, trắng (giống Trang chủ)
         int[] cardBgs = {R.drawable.bg_card_mint, R.drawable.bg_card_peach, R.drawable.bg_card};
@@ -48,7 +50,7 @@ public class ApplicantAdapter extends RecyclerView.Adapter<ApplicantAdapter.Appl
         holder.tvJobTitle.setText("Ứng tuyển: " + app.getJobTitle());
         holder.tvEmail.setText(app.getEmail());
 
-        String status = normalize(app.getStatus());
+        String status = Application.normalize(app.getStatus());
         holder.tvStatus.setText(statusLabel(status));
         holder.tvStatus.setTextColor(statusTextColor(status));
 
@@ -66,9 +68,9 @@ public class ApplicantAdapter extends RecyclerView.Adapter<ApplicantAdapter.Appl
         return applicantList.size();
     }
 
-    public void updateApplicant(JobApplication updated) {
+    public void updateApplicant(Application updated) {
         for (int i = 0; i < applicantList.size(); i++) {
-            if (applicantList.get(i).getId().equals(updated.getId())) {
+            if (applicantList.get(i).getId() != null && applicantList.get(i).getId().equals(updated.getId())) {
                 applicantList.set(i, updated);
                 notifyItemChanged(i);
                 break;
@@ -76,62 +78,43 @@ public class ApplicantAdapter extends RecyclerView.Adapter<ApplicantAdapter.Appl
         }
     }
 
-    // Đưa mọi giá trị (kể cả tiếng Việt lưu cũ) về 4 trạng thái chuẩn
-    private String normalize(String status) {
-        if (status == null) return "Pending";
-        switch (status) {
-            case "Reviewed":
-            case "Đã xem":
-                return "Reviewed";
-            case "Accepted":
-            case "Được duyệt":
-            case "Chấp nhận":
-                return "Accepted";
-            case "Rejected":
-            case "Từ chối":
-                return "Rejected";
-            default:
-                return "Pending";
-        }
-    }
-
     private String statusLabel(String status) {
         switch (status) {
-            case "Reviewed": return "Đã xem";
-            case "Accepted": return "Chấp nhận";
-            case "Rejected": return "Từ chối";
+            case Application.STATUS_REVIEWED: return "Đã xem";
+            case Application.STATUS_ACCEPTED: return "Chấp nhận";
+            case Application.STATUS_REJECTED: return "Từ chối";
             default: return "Chờ duyệt";
-        }
-    }
-
-    private int statusBgColor(String status) {
-        switch (status) {
-            case "Reviewed": return 0xFFFFFFFF; // trắng, nổi trên nền thẻ màu
-            case "Accepted": return 0xFFCDEFD6; // xanh lá nhạt
-            case "Rejected": return 0xFFFFDAD6; // đỏ nhạt
-            default: return 0xFFFFFFFF;         // trắng
         }
     }
 
     private int statusTextColor(String status) {
         switch (status) {
-            case "Reviewed": return 0xFF0F766E;
-            case "Accepted": return 0xFF166534;
-            case "Rejected": return 0xFFC62828;
-            default: return 0xFF9A4A00;
+            case Application.STATUS_REVIEWED: return 0xFF1E3A8A; // xanh dương đậm
+            case Application.STATUS_ACCEPTED: return 0xFF065F46; // xanh lá đậm
+            case Application.STATUS_REJECTED: return 0xFF991B1B; // đỏ đậm
+            default: return 0xFF9A3412; // cam đậm
         }
     }
 
-    static class ApplicantViewHolder extends RecyclerView.ViewHolder {
-        TextView tvName, tvJobTitle, tvEmail, tvStatus, tvInitial;
+    private int statusBgColor(String status) {
+        switch (status) {
+            case Application.STATUS_REVIEWED: return 0xFFDBEAFE; // nền xanh dương nhạt
+            case Application.STATUS_ACCEPTED: return 0xFFD1FAE5; // nền xanh lá nhạt
+            case Application.STATUS_REJECTED: return 0xFFFEE2E2; // nền đỏ nhạt
+            default: return 0xFFFFEDD5; // nền cam nhạt
+        }
+    }
 
-        ApplicantViewHolder(@NonNull View itemView) {
+    public static class ApplicantViewHolder extends RecyclerView.ViewHolder {
+        TextView tvInitial, tvName, tvJobTitle, tvEmail, tvStatus;
+
+        public ApplicantViewHolder(@NonNull View itemView) {
             super(itemView);
+            tvInitial = itemView.findViewById(R.id.tvApplicantInitial);
             tvName = itemView.findViewById(R.id.tvApplicantName);
             tvJobTitle = itemView.findViewById(R.id.tvApplicantJobTitle);
             tvEmail = itemView.findViewById(R.id.tvApplicantEmail);
             tvStatus = itemView.findViewById(R.id.tvApplicantStatus);
-            tvInitial = itemView.findViewById(R.id.tvApplicantInitial);
         }
     }
 }
