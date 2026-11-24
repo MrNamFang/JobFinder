@@ -32,6 +32,15 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        android.view.View root = findViewById(android.R.id.content);
+        if (root != null) {
+            androidx.core.view.ViewCompat.setOnApplyWindowInsetsListener(root, (v, insets) -> {
+                androidx.core.graphics.Insets bars = insets.getInsets(androidx.core.view.WindowInsetsCompat.Type.systemBars());
+                v.setPadding(bars.left, bars.top, bars.right, bars.bottom);
+                return insets;
+            });
+        }
+
         mAuth = FirebaseAuth.getInstance();
 
         etEmail = findViewById(R.id.etEmail);
@@ -75,7 +84,6 @@ public class LoginActivity extends AppCompatActivity {
 
         mAuth.signInWithEmailAndPassword(email, password)
                 .addOnSuccessListener(authResult -> {
-                    Toast.makeText(this, "Đăng nhập thành công!", Toast.LENGTH_SHORT).show();
                     goToMain();
                 })
                 .addOnFailureListener(e -> {
@@ -114,23 +122,32 @@ public class LoginActivity extends AppCompatActivity {
                 .get()
                 .addOnSuccessListener(doc -> {
                     if (doc.exists()) {
+                        // Kiểm tra khoá tài khoản
                         String status = doc.getString("status");
                         Boolean blocked = doc.getBoolean("blocked");
                         if ("banned".equalsIgnoreCase(status) || (blocked != null && blocked)) {
-                            mAuth.signOut();
+                            mAuth.signOut(); // Đăng xuất ngay lập tức
                             btnLogin.setEnabled(true);
-                            new androidx.appcompat.app.AlertDialog.Builder(this)
+
+                            // Thông báo tài khoản bị khóa qua Toast nổi bật
+                            Toast.makeText(LoginActivity.this, "Tài khoản của bạn đã bị khóa bởi Quản trị viên!", Toast.LENGTH_LONG).show();
+
+                            // Hộp thoại Popup cảnh báo tài khoản bị khóa
+                            new com.google.android.material.dialog.MaterialAlertDialogBuilder(LoginActivity.this)
                                     .setTitle("Tài khoản bị khóa")
                                     .setMessage("Tài khoản của bạn đã bị khóa bởi Quản trị viên. Vui lòng liên hệ hỗ trợ.")
-                                    .setPositiveButton("Đóng", null)
+                                    .setIcon(android.R.drawable.ic_dialog_alert)
+                                    .setPositiveButton("Đã hiểu", null)
+                                    .setCancelable(false)
                                     .show();
                             return;
                         }
                     }
 
-                    String role = doc.getString("role");
-                    Intent intent;
+                    Toast.makeText(this, "Đăng nhập thành công!", Toast.LENGTH_SHORT).show();
 
+                    String role = doc.getString("role");//kiểm tra vai trò (role routing)
+                    Intent intent;
                     if ("admin".equals(role)) {
                         intent = new Intent(this, AdminDashboardActivity.class);
                     } else if ("employer".equals(role)) {

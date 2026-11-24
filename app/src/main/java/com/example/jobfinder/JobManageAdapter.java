@@ -49,27 +49,47 @@ public class JobManageAdapter extends RecyclerView.Adapter<JobManageAdapter.JobV
         int[] cardBgs = {R.drawable.bg_card_mint, R.drawable.bg_card_peach, R.drawable.bg_card};
         holder.itemView.setBackgroundResource(cardBgs[position % 3]);
 
-        holder.tvTitle.setText(job.getTitle());
-        holder.tvCompany.setText(job.getCompanyName());
-        holder.tvLocation.setText(job.getLocation());
+        if (holder.tvTitle != null) holder.tvTitle.setText(job.getTitle());
+        if (holder.tvCompany != null) holder.tvCompany.setText(job.getCompanyName());
+        if (holder.tvLocation != null) holder.tvLocation.setText(job.getLocation());
 
         boolean isOpen = job.isOpen();
+        String adminStatus = job.getAdminStatus();
+        boolean isRejected = "rejected".equalsIgnoreCase(adminStatus);
 
-        // Chip trạng thái: chữ + màu nền đổi theo Open/Closed
-        holder.tvStatus.setText(isOpen ? "Đang tuyển" : "Đã đóng");
-        holder.tvStatus.setTextColor(isOpen ? 0xFF0F766E : 0xFF7A5A48);
+        // Chip trạng thái:
+        if (holder.tvStatus != null) {
+            GradientDrawable chip = new GradientDrawable();
+            chip.setCornerRadius(12f * holder.itemView.getResources().getDisplayMetrics().density);
 
-        GradientDrawable chip = new GradientDrawable();
-        chip.setCornerRadius(12f * holder.itemView.getResources().getDisplayMetrics().density);
-        chip.setColor(isOpen ? 0xFFFFFFFF : 0xFFEADFD6);
-        holder.tvStatus.setBackground(chip);
+            if (isRejected) {
+                holder.tvStatus.setText("Bị từ chối");
+                holder.tvStatus.setTextColor(0xFFC62828);
+                chip.setColor(0xFFFFEBEE);
+            } else if (isOpen) {
+                holder.tvStatus.setText("Đang tuyển");
+                holder.tvStatus.setTextColor(0xFF0F766E);
+                chip.setColor(0xFFFFFFFF);
+            } else {
+                holder.tvStatus.setText("Đã đóng");
+                holder.tvStatus.setTextColor(0xFF7A5A48);
+                chip.setColor(0xFFEADFD6);
+            }
+            holder.tvStatus.setBackground(chip);
+        }
 
         // Nút toggle
-        holder.btnToggleStatus.setText(isOpen ? "Đóng tin" : "Mở lại");
+        if (holder.btnToggleStatus != null) {
+            holder.btnToggleStatus.setText(isOpen ? "Đóng tin" : "Mở lại");
+            holder.btnToggleStatus.setOnClickListener(v -> listener.onToggleStatusClick(job));
+        }
 
-        holder.btnEdit.setOnClickListener(v -> listener.onEditClick(job));
-        holder.btnDelete.setOnClickListener(v -> listener.onDeleteClick(job));
-        holder.btnToggleStatus.setOnClickListener(v -> listener.onToggleStatusClick(job));
+        if (holder.btnEdit != null) {
+            holder.btnEdit.setOnClickListener(v -> listener.onEditClick(job));
+        }
+        if (holder.btnDelete != null) {
+            holder.btnDelete.setOnClickListener(v -> listener.onDeleteClick(job));
+        }
     }
 
     @Override
@@ -101,9 +121,15 @@ public class JobManageAdapter extends RecyclerView.Adapter<JobManageAdapter.JobV
 
         public JobViewHolder(@NonNull View itemView) {
             super(itemView);
-            tvTitle = itemView.findViewById(R.id.tvJobTitle);
-            tvCompany = itemView.findViewById(R.id.tvJobCompany);
-            tvLocation = itemView.findViewById(R.id.tvJobLocation);
+            tvTitle = itemView.findViewById(R.id.tvManageJobTitle);
+            if (tvTitle == null) tvTitle = itemView.findViewById(R.id.tvJobTitle);
+
+            tvCompany = itemView.findViewById(R.id.tvManageJobCompany);
+            if (tvCompany == null) tvCompany = itemView.findViewById(R.id.tvJobCompany);
+
+            tvLocation = itemView.findViewById(R.id.tvManageJobLocation);
+            if (tvLocation == null) tvLocation = itemView.findViewById(R.id.tvJobLocation);
+
             tvStatus = itemView.findViewById(R.id.tvJobStatus);
             btnEdit = itemView.findViewById(R.id.btnEditJob);
             btnDelete = itemView.findViewById(R.id.btnDeleteJob);

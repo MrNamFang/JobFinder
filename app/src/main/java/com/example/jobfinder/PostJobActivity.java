@@ -64,7 +64,8 @@ public class PostJobActivity extends AppCompatActivity {
         auth = FirebaseAuth.getInstance();
 
         ArrayAdapter<String> adapter = new ArrayAdapter<>(
-                this, android.R.layout.simple_spinner_dropdown_item, jobTypes);
+                this, R.layout.item_spinner, jobTypes);
+        adapter.setDropDownViewResource(R.layout.item_spinner_dropdown);
         spinnerJobType.setAdapter(adapter);
 
         // Tự động điền sẵn tên công ty nếu Employer đã cập nhật hồ sơ
@@ -120,7 +121,7 @@ public class PostJobActivity extends AppCompatActivity {
         job.setCompanyName(company);
         job.setCompany(company);
         job.setStatus("Open");
-        job.setAdminStatus("approved"); // Mặc định tin hợp lệ để hiển thị liền
+        job.setAdminStatus("pending"); // Mặc định tin mới ở trạng thái chờ Admin phê duyệt
 
         setLoading(true);
 

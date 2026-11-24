@@ -65,7 +65,7 @@ public class AdminUserAdapter
         }
 
         holder.btnBlock.setOnClickListener(v -> {
-            boolean newStatus = !user.isBlocked();
+            boolean newStatus = !user.isBlocked();// Đảo trạng thái hiện tại
 
             Map<String, Object> updates = new HashMap<>();
             updates.put("blocked", newStatus);
@@ -73,8 +73,9 @@ public class AdminUserAdapter
 
             db.collection("users")
                     .document(user.getId())
-                    .update(updates)
+                    .update(updates)//cập nhật trực tiếp lên firestore
                     .addOnSuccessListener(aVoid -> {
+                        // Cập nhật lại đối tượng trong List và gọi notifyItemChanged(position)
                         userList.set(
                                 position,
                                 new AdminUser(
@@ -85,7 +86,7 @@ public class AdminUserAdapter
                                         newStatus
                                 )
                         );
-                        notifyItemChanged(position);
+                        notifyItemChanged(position);//làm mới lại giao diện ngay vị trí đó
                         Toast.makeText(
                                 holder.itemView.getContext(),
                                 (newStatus ? "Đã khóa" : "Đã mở khóa") + " tài khoản: " + user.getName(),

@@ -1,13 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <!-- Hộp thoại xác nhận (Ứng tuyển, Hủy đơn...) theo màu JobFinder -->
-    <style name="JobFinderDialog" parent="ThemeOverlay.Material3.MaterialAlertDialog">
+    <!-- Hộp thoại xác nhận AppCompat -->
+    <style name="JobFinderDialog" parent="ThemeOverlay.AppCompat.Dialog.Alert">
+        <item name="colorPrimary">@color/jf_teal</item>
+        <item name="colorAccent">@color/jf_teal</item>
+        <item name="android:textColorPrimary">@color/jf_ink</item>
+        <item name="android:textColorSecondary">@color/jf_muted</item>
+        <item name="android:windowAnimationStyle">@null</item>
+    </style>
+
+    <!-- Hộp thoại xác nhận Material 3 (MaterialAlertDialogBuilder) -->
+    <style name="JobFinderMaterialDialog" parent="ThemeOverlay.Material3.MaterialAlertDialog">
         <item name="colorPrimary">@color/jf_teal</item>
         <item name="colorSurface">@color/jf_cream</item>
         <item name="colorOnSurface">@color/jf_ink</item>
         <item name="colorOnSurfaceVariant">@color/jf_muted</item>
-        <item name="android:windowBackground">@drawable/bg_dialog</item>
+        <item name="android:textColorPrimary">@color/jf_ink</item>
+        <item name="android:textColorSecondary">@color/jf_muted</item>
+        <item name="android:windowAnimationStyle">@null</item>
     </style>
 
 </resources>

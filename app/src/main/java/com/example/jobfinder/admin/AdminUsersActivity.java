@@ -138,7 +138,7 @@ public class AdminUsersActivity extends AppCompatActivity {
                     for (var document : result) {
                         String id = document.getId();
 
-                        String name = document.getString("fullName");
+                        String name = document.getString("fullName");//fallback sang "name"
                         if (name == null) {
                             name = document.getString("name");
                         }
@@ -148,6 +148,7 @@ public class AdminUsersActivity extends AppCompatActivity {
 
                         Boolean blockedValue = document.getBoolean("blocked");
                         String statusValue = document.getString("status");
+                        // Xác định trạng thái khóa: blocked == true HOẶC status == "banned"
 
                         boolean blocked = (blockedValue != null && blockedValue)
                                 || "banned".equalsIgnoreCase(statusValue);

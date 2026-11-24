@@ -1,7 +1,11 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
-    <style name="Base.Theme.JobFinder" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your dark theme here. -->
-        <!-- <item name="colorPrimary">@color/my_dark_primary</item> -->
+    <!-- Base application theme: Đồng bộ giao diện sáng JobFinder, tránh Dark Mode làm đen màn hình -->
+    <style name="Base.Theme.JobFinder" parent="Theme.Material3.Light.NoActionBar">
+        <item name="colorPrimary">@color/jf_teal</item>
+        <item name="colorOnPrimary">@color/jf_white</item>
+        <item name="alertDialogTheme">@style/JobFinderDialog</item>
+        <item name="materialAlertDialogTheme">@style/JobFinderMaterialDialog</item>
+        <item name="android:windowDisablePreview">true</item>
+        <item name="android:windowBackground">@color/jf_cream</item>
     </style>
 </resources>

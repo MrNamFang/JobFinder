@@ -57,8 +57,16 @@ public class Notification implements Serializable {
         return isRead;
     }
 
+    public boolean getIsRead() {
+        return isRead;
+    }
+
     public void setRead(boolean read) {
         isRead = read;
+    }
+
+    public void setIsRead(boolean isRead) {
+        this.isRead = isRead;
     }
 
     public long getCreatedAt() {

@@ -1,16 +1,19 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <style name="Base.Theme.JobFinder" parent="Theme.Material3.DayNight.NoActionBar">
+    <style name="Base.Theme.JobFinder" parent="Theme.Material3.Light.NoActionBar">
         <!-- Màu chủ đạo: nút Material mặc định sẽ là teal thay vì tím -->
         <item name="colorPrimary">@color/jf_teal</item>
         <item name="colorOnPrimary">@color/jf_white</item>
         <!-- Hộp thoại xác nhận -->
         <item name="alertDialogTheme">@style/JobFinderDialog</item>
+        <item name="materialAlertDialogTheme">@style/JobFinderMaterialDialog</item>
+        <!-- Chống kẹt màn hình đen khởi động trên Emulator và đặt nền mặc định -->
+        <item name="android:windowDisablePreview">true</item>
+        <item name="android:windowBackground">@color/jf_cream</item>
     </style>
 
     <style name="Theme.JobFinder" parent="Base.Theme.JobFinder" />
 
     <style name="JfSpinner" parent="Widget.AppCompat.Spinner">
         <item name="android:popupBackground">@drawable/bg_spinner_popup</item>
-        <item name="android:dropDownVerticalOffset">48dp</item>
     </style>
 </resources>

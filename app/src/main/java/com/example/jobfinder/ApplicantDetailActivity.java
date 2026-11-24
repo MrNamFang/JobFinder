@@ -74,7 +74,8 @@ public class ApplicantDetailActivity extends Activity {
         tvAppliedDate.setText("Nộp lúc: " + sdf.format(new Date(application.getAppliedDate())));
 
         ArrayAdapter<String> adapter = new ArrayAdapter<>(
-                this, android.R.layout.simple_spinner_dropdown_item, statusLabels);
+                this, R.layout.item_spinner, statusLabels);
+        adapter.setDropDownViewResource(R.layout.item_spinner_dropdown);
         spinnerStatus.setAdapter(adapter);
 
         // Đặt Spinner về đúng trạng thái hiện tại của ứng viên này khi mở màn
@@ -111,6 +112,17 @@ public class ApplicantDetailActivity extends Activity {
 
                     Toast.makeText(this, "Đã cập nhật trạng thái: " + statusLabels[selectedIndex],
                             Toast.LENGTH_SHORT).show();
+
+                    // Gửi thông báo đến Ứng viên về trạng thái mới của hồ sơ
+                    String applicantUid = application.getUserId();
+                    if (applicantUid != null && !applicantUid.isEmpty()) {
+                        NotificationHelper.sendInAppNotification(
+                                applicantUid,
+                                "Cập nhật hồ sơ ứng tuyển",
+                                "Đơn ứng tuyển vào '" + application.getJobTitle() + "' của bạn đã được cập nhật: " + statusLabels[selectedIndex]
+                        );
+                    }
+
                     finish();
                 })
                 .addOnFailureListener(e -> {

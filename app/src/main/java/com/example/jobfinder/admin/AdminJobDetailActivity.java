@@ -104,14 +104,31 @@ public class AdminJobDetailActivity extends AppCompatActivity {
     }
 
     private void showRejectDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        com.google.android.material.dialog.MaterialAlertDialogBuilder builder =
+                new com.google.android.material.dialog.MaterialAlertDialogBuilder(this);
         builder.setTitle("Từ chối bài tuyển dụng");
         builder.setMessage("Vui lòng nhập lý do từ chối để thông báo cho Nhà tuyển dụng:");
 
         final EditText input = new EditText(this);
         input.setHint("VD: Thông tin mức lương chưa rõ ràng, vi phạm tiêu chuẩn cộng đồng...");
-        input.setPadding(30, 20, 30, 20);
-        builder.setView(input);
+        input.setTextColor(0xFF2B1B12);
+        input.setHintTextColor(0xFF7A5A48);
+        input.setTextSize(15f);
+        input.setBackgroundResource(android.R.drawable.editbox_background);
+        input.setPadding(40, 30, 40, 30);
+
+        android.widget.FrameLayout container = new android.widget.FrameLayout(this);
+        android.widget.FrameLayout.LayoutParams params = new android.widget.FrameLayout.LayoutParams(
+                android.view.ViewGroup.LayoutParams.MATCH_PARENT,
+                android.view.ViewGroup.LayoutParams.WRAP_CONTENT
+        );
+        params.leftMargin = 50;
+        params.rightMargin = 50;
+        params.topMargin = 10;
+        params.bottomMargin = 10;
+        input.setLayoutParams(params);
+        container.addView(input);
+        builder.setView(container);
 
         builder.setPositiveButton("Xác nhận từ chối", (dialog, which) -> {
             String reason = input.getText().toString().trim();
@@ -122,7 +139,11 @@ public class AdminJobDetailActivity extends AppCompatActivity {
         });
 
         builder.setNegativeButton("Hủy", (dialog, which) -> dialog.cancel());
-        builder.show();
+        androidx.appcompat.app.AlertDialog dialog = builder.create();
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setWindowAnimations(0);
+        }
+        dialog.show();
     }
 
     private void updateStatusView(String status, String rejectReason) {
@@ -150,6 +171,7 @@ public class AdminJobDetailActivity extends AppCompatActivity {
         }
     }
 
+    //hàm cập nhâ lên firebase
     private void updateJobStatus(String newStatus, String rejectReason, String toastMessage) {
         if (jobId == null || jobId.isEmpty()) {
             Toast.makeText(this, "Không tìm thấy mã bài đăng", Toast.LENGTH_SHORT).show();
@@ -159,12 +181,12 @@ public class AdminJobDetailActivity extends AppCompatActivity {
         Map<String, Object> updates = new HashMap<>();
         updates.put("adminStatus", newStatus);
         if ("rejected".equalsIgnoreCase(newStatus)) {
-            updates.put("status", "Closed");
+            updates.put("status", "Closed");//đóng bài
         } else if ("approved".equalsIgnoreCase(newStatus)) {
-            updates.put("status", "Open");
+            updates.put("status", "Open");//mở bài cho ứng viên thấy
         }
         if (rejectReason != null) {
-            updates.put("rejectReason", rejectReason);
+            updates.put("rejectReason", rejectReason);//lưu lý do
         }
 
         db.collection("jobs")
@@ -173,6 +195,29 @@ public class AdminJobDetailActivity extends AppCompatActivity {
                 .addOnSuccessListener(aVoid -> {
                     updateStatusView(newStatus, rejectReason);
                     Toast.makeText(AdminJobDetailActivity.this, toastMessage, Toast.LENGTH_SHORT).show();
+
+                    // Gửi thông báo cho Nhà tuyển dụng sở hữu bài đăng này
+                    db.collection("jobs").document(jobId).get().addOnSuccessListener(doc -> {
+                        if (doc.exists()) {
+                            String empId = doc.getString("employerId");
+                            String jTitle = doc.getString("title");
+                            if (empId != null && !empId.isEmpty()) {
+                                if ("approved".equalsIgnoreCase(newStatus)) {
+                                    com.example.jobfinder.NotificationHelper.sendInAppNotification(
+                                            empId,
+                                            "Tin tuyển dụng đã được duyệt",
+                                            "Bài đăng '" + jTitle + "' đã được Admin phê duyệt và xuất hiện trên Trang chủ."
+                                    );
+                                } else if ("rejected".equalsIgnoreCase(newStatus)) {
+                                    com.example.jobfinder.NotificationHelper.sendInAppNotification(
+                                            empId,
+                                            "Tin tuyển dụng bị từ chối",
+                                            "Bài đăng '" + jTitle + "' bị từ chối kiểm duyệt. Lý do: " + rejectReason
+                                    );
+                                }
+                            }
+                        }
+                    });
                 })
                 .addOnFailureListener(e -> {
                     Toast.makeText(AdminJobDetailActivity.this, "Lỗi cập nhật: " + e.getMessage(), Toast.LENGTH_LONG).show();

@@ -55,7 +55,7 @@ public class AdminReportsActivity extends AppCompatActivity {
                         adapter.setCollectionName("reports");
                         parseDocs(result);
                     } else {
-                        loadFromFeedbacks();
+                        loadFromFeedbacks();// Nếu rỗng hoặc không có, tự động đọc từ "feedbacks"
                     }
                 })
                 .addOnFailureListener(e -> loadFromFeedbacks());

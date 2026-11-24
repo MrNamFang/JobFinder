@@ -35,6 +35,15 @@ public class AdminDashboardActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_admin_dashboard);
 
+        android.view.View root = findViewById(android.R.id.content);
+        if (root != null) {
+            androidx.core.view.ViewCompat.setOnApplyWindowInsetsListener(root, (v, insets) -> {
+                androidx.core.graphics.Insets bars = insets.getInsets(androidx.core.view.WindowInsetsCompat.Type.systemBars());
+                v.setPadding(bars.left, bars.top, bars.right, bars.bottom);
+                return insets;
+            });
+        }
+
         tvTotalUsers = findViewById(R.id.tvTotalUsers);
         tvTotalJobs = findViewById(R.id.tvTotalJobs);
         tvTotalApplications = findViewById(R.id.tvTotalApplications);
@@ -89,6 +98,7 @@ public class AdminDashboardActivity extends AppCompatActivity {
     }
 
     @Override
+    //tự động chạy lại cập nhật số mới nhất khi admin từ màn hình duyệt hay khoá user bấm nút quay lại
     protected void onResume() {
         super.onResume();
         loadTotalUsers();
@@ -98,6 +108,7 @@ public class AdminDashboardActivity extends AppCompatActivity {
         loadPendingActions();
     }
 
+    //tổng số người dùng
     private void loadTotalUsers() {
         db.collection("users")
                 .get()
@@ -108,6 +119,7 @@ public class AdminDashboardActivity extends AppCompatActivity {
                 });
     }
 
+    //tổng số tin việc làm
     private void loadTotalJobs() {
         db.collection("jobs")
                 .get()
@@ -118,6 +130,7 @@ public class AdminDashboardActivity extends AppCompatActivity {
                 });
     }
 
+    //tổng số lượt ứng tuyển
     private void loadTotalApplications() {
         db.collection("applications")
                 .get()
@@ -133,6 +146,7 @@ public class AdminDashboardActivity extends AppCompatActivity {
                 });
     }
 
+    //tổng số nhà tuyển dụng
     private void loadTotalRecruiters() {
         db.collection("users")
                 .whereEqualTo("role", "employer")
@@ -144,6 +158,7 @@ public class AdminDashboardActivity extends AppCompatActivity {
                 });
     }
 
+    //cảnh báo công việc cần làm ngay
     private void loadPendingActions() {
         // Đếm bài đăng chờ duyệt
         db.collection("jobs")

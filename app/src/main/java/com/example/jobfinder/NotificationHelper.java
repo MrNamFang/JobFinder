@@ -70,4 +70,22 @@ public class NotificationHelper {
         NotificationManagerCompat.from(context).notify(notificationId, builder.build());
         return true;
     }
+
+    /**
+     * Tự động lưu thông báo trong app vào Firestore collection "notifications"
+     * để hiển thị tại màn hình NotificationsActivity.
+     */
+    public static void sendInAppNotification(String userId, String title, String message) {
+        if (userId == null || userId.trim().isEmpty()) return;
+        java.util.Map<String, Object> notif = new java.util.HashMap<>();
+        notif.put("userId", userId);
+        notif.put("title", title);
+        notif.put("message", message);
+        notif.put("isRead", false);
+        notif.put("read", false);
+        notif.put("createdAt", System.currentTimeMillis());
+        com.google.firebase.firestore.FirebaseFirestore.getInstance()
+                .collection("notifications")
+                .add(notif);
+    }
 }

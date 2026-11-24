@@ -97,10 +97,11 @@ public class HomeFragment extends Fragment {
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
                     jobList.clear();
+                    //hiển thị bài đã duyệt trên trang chủ ứng vien
                     for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
                         Job job = doc.toObject(Job.class);
                         job.setId(doc.getId());
-                        if (!job.isClosed() && !"rejected".equalsIgnoreCase(job.getAdminStatus())) {
+                        if (!job.isClosed() && job.isApproved()) {
                             jobList.add(job);
                         }
                     }

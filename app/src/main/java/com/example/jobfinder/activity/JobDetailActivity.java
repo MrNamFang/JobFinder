@@ -238,6 +238,7 @@ public class JobDetailActivity extends AppCompatActivity {
                         name = mAuth.getCurrentUser() != null && mAuth.getCurrentUser().getEmail() != null
                                 ? mAuth.getCurrentUser().getEmail() : "Ứng viên";
                     }
+                    final String finalApplicantName = name;
                     String email = user.getEmail();
                     if (email == null || email.trim().isEmpty()) {
                         email = mAuth.getCurrentUser() != null ? mAuth.getCurrentUser().getEmail() : "";
@@ -268,6 +269,22 @@ public class JobDetailActivity extends AppCompatActivity {
                             .addOnSuccessListener(documentReference -> {
                                 markAsApplied();
                                 Toast.makeText(this, "Ứng tuyển thành công!", Toast.LENGTH_SHORT).show();
+
+                                // Thông báo cho Nhà tuyển dụng
+                                String empId = currentJob.getEmployerId();
+                                if (empId != null && !empId.isEmpty()) {
+                                    com.example.jobfinder.NotificationHelper.sendInAppNotification(
+                                            empId,
+                                            "Ứng viên mới nộp đơn",
+                                            finalApplicantName + " vừa nộp đơn ứng tuyển vào vị trí: " + currentJob.getTitle()
+                                    );
+                                }
+                                // Thông báo cho chính Ứng viên
+                                com.example.jobfinder.NotificationHelper.sendInAppNotification(
+                                        currentUid,
+                                        "Ứng tuyển thành công",
+                                        "Bạn đã nộp đơn ứng tuyển vào: " + currentJob.getTitle()
+                                );
                             })
                             .addOnFailureListener(e -> {
                                 btnApply.setEnabled(true);
