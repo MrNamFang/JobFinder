@@ -1,15 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+<<<<<<< HEAD
     android:background="@color/jf_cream"
     android:fillViewport="true">
+=======
+    android:orientation="vertical"
+    android:fitsSystemWindows="true"
+    android:background="@color/jf_cream">
+>>>>>>> bd054279d712281f571f8b419c11f4197c725e26
 
+    <!-- Header phần trên -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
+<<<<<<< HEAD
         android:paddingBottom="24dp">
 
         <!-- Header: tên + vị trí ứng tuyển -->
@@ -156,6 +165,301 @@
                 android:textSize="16sp"
                 android:textStyle="bold" />
         </LinearLayout>
+=======
+        android:paddingHorizontal="20dp"
+        android:paddingTop="16dp"
+        android:paddingBottom="24dp"
+        android:background="@drawable/bg_header">
 
+        <!-- Nút Back góc trên bên trái -->
+        <ImageButton
+            android:id="@+id/btnBack"
+            android:layout_width="42dp"
+            android:layout_height="42dp"
+            android:background="@drawable/bg_chip"
+            android:contentDescription="Quay lại"
+            android:src="@drawable/baseline_arrow_back_24"
+            app:tint="@color/jf_mint_ink" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginTop="16dp">
+
+            <!-- Avatar đại diện -->
+            <TextView
+                android:id="@+id/tvAvatar"
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                android:background="@drawable/bg_avatar"
+                android:gravity="center"
+                android:textColor="@color/white"
+                android:textSize="22sp"
+                android:textStyle="bold"
+                tools:text="N" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="14dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tvDetailName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/jf_mint_ink"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    tools:text="Nguyễn Văn A" />
+
+                <TextView
+                    android:id="@+id/tvDetailJobTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="3dp"
+                    android:textColor="#1F5A53"
+                    android:textSize="14sp"
+                    tools:text="Ứng tuyển: Lập trình viên Android" />
+>>>>>>> bd054279d712281f571f8b419c11f4197c725e26
+
+                <TextView
+                    android:id="@+id/tvDetailAppliedDate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:textColor="#3D7A72"
+                    android:textSize="12sp"
+                    tools:text="Nộp lúc: 16:42 02/11/2026" />
+            </LinearLayout>
+        </LinearLayout>
     </LinearLayout>
-</androidx.core.widget.NestedScrollView>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="20dp">
+
+            <!-- Card 1: Thông tin liên hệ -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp"
+                android:background="@drawable/bg_card"
+                android:elevation="2dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="THÔNG TIN LIÊN HỆ"
+                    android:textColor="@color/jf_muted"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    android:letterSpacing="0.05" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginTop="12dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="📧 "
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:id="@+id/tvDetailEmail"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/jf_ink"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        tools:text="email@example.com" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginTop="8dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="📱 "
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:id="@+id/tvDetailPhone"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/jf_ink"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        tools:text="0123456789" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Card 2: Hồ sơ ứng viên (Học vấn, Kinh nghiệm, Kỹ năng) -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp"
+                android:layout_marginTop="16dp"
+                android:background="@drawable/bg_card"
+                android:elevation="2dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="HỒ SƠ ỨNG VIÊN"
+                    android:textColor="@color/jf_muted"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    android:letterSpacing="0.05" />
+
+                <!-- Học vấn -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:text="🎓 Trình độ học vấn"
+                    android:textColor="@color/jf_ink"
+                    android:textSize="13sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tvDetailEducation"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:textColor="@color/jf_body"
+                    android:textSize="14sp"
+                    tools:text="Đại học Thủ Dầu Một" />
+
+                <!-- Kinh nghiệm -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:text="💼 Kinh nghiệm làm việc"
+                    android:textColor="@color/jf_ink"
+                    android:textSize="13sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tvDetailExperience"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:textColor="@color/jf_body"
+                    android:textSize="14sp"
+                    tools:text="1 năm lập trình Android" />
+
+                <!-- Kỹ năng -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:text="⚡ Kỹ năng chuyên môn"
+                    android:textColor="@color/jf_ink"
+                    android:textSize="13sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tvDetailSkills"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:textColor="@color/jf_body"
+                    android:textSize="14sp"
+                    tools:text="Java, Android, Firebase" />
+
+                <!-- Thư giới thiệu (nếu có) -->
+                <LinearLayout
+                    android:id="@+id/layoutCoverLetter"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:visibility="gone">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:text="✉️ Thư giới thiệu"
+                        android:textColor="@color/jf_ink"
+                        android:textSize="13sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/tvDetailCoverLetter"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:textColor="@color/jf_body"
+                        android:textSize="14sp"
+                        android:lineSpacingExtra="3dp" />
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <!-- Card 3: Cập nhật trạng thái -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp"
+                android:layout_marginTop="16dp"
+                android:background="@drawable/bg_card"
+                android:elevation="2dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="TRẠNG THÁI ỨNG TUYỂN"
+                    android:textColor="@color/jf_muted"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    android:letterSpacing="0.05" />
+
+                <Spinner
+                    android:id="@+id/spinnerStatus"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:layout_marginTop="10dp"
+                    android:paddingHorizontal="12dp"
+                    android:background="@drawable/bg_input" />
+
+                <Button
+                    android:id="@+id/btnUpdateStatus"
+                    android:layout_width="match_parent"
+                    android:layout_height="52dp"
+                    android:layout_marginTop="14dp"
+                    android:text="CẬP NHẬT TRẠNG THÁI"
+                    android:textColor="@color/white"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:background="@drawable/bg_btn_primary" />
+            </LinearLayout>
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+</LinearLayout>
